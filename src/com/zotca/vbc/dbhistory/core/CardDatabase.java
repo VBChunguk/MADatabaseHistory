@@ -233,7 +233,7 @@ public class CardDatabase implements Serializable {
 		if (previous == null) // initial
 		{
 			for (int k : cdb.keySet())
-				ret.addNew(k);
+				ret.addNew(cdb.get(k));
 			return ret;
 		}
 		Hashtable<Integer, Card> pdb = previous.mIdCardDict;
@@ -243,7 +243,7 @@ public class CardDatabase implements Serializable {
 		{
 			if (!cdb.containsKey(k)) // deleted
 			{
-				ret.addDeleted(k);
+				ret.addDeleted(pdb.get(k));
 				hasDelta = true;
 			}
 		}
@@ -252,7 +252,7 @@ public class CardDatabase implements Serializable {
 		{
 			if (!pdb.containsKey(k)) // added
 			{
-				ret.addNew(k);
+				ret.addNew(cdb.get(k));
 				hasDelta = true;
 			}
 			else
@@ -261,7 +261,7 @@ public class CardDatabase implements Serializable {
 				Card pc = pdb.get(k);
 				if (!cc.equals(pc)) // modified
 				{
-					ret.addModified(k);
+					ret.addModified(cdb.get(k));
 					hasDelta = true;
 				}
 			}

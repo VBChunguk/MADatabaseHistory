@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
+import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
+
 public class DatabaseDelta implements Serializable {
 
 	/**
@@ -24,14 +26,17 @@ public class DatabaseDelta implements Serializable {
 	}
 	
 	private Hashtable<Integer, DeltaType> mDeltas;
+	private Hashtable<Integer, Card> mCardData;
 	private Date mCreatedAt;
 	
 	public DatabaseDelta() {
 		mDeltas = new Hashtable<Integer, DeltaType>();
+		mCardData = new Hashtable<Integer, Card>();
 		mCreatedAt = Calendar.getInstance().getTime();
 	}
 	public DatabaseDelta(Date createdAt) {
 		mDeltas = new Hashtable<Integer, DeltaType>();
+		mCardData = new Hashtable<Integer, Card>();
 		mCreatedAt = createdAt;
 	}
 	
@@ -54,10 +59,12 @@ public class DatabaseDelta implements Serializable {
 		
 		int len = in.readInt();
 		mDeltas = new Hashtable<Integer, DeltaType>(len);
+		mCardData = new Hashtable<Integer, Card>(len);
 		for (int i = 0; i < len; i++)
 		{
 			int id = in.readInt();
 			byte rtype = in.readByte();
+			Card card = (Card) in.readObject();
 			DeltaType type = DeltaType.ADDED;
 			switch (rtype)
 			{
@@ -74,6 +81,7 @@ public class DatabaseDelta implements Serializable {
 				throw new ClassNotFoundException("Invalid DeltaType");
 			}
 			mDeltas.put(id, type);
+			mCardData.put(id, card);
 		}
 	}
 	
@@ -107,16 +115,24 @@ public class DatabaseDelta implements Serializable {
 		return mCreatedAt;
 	}
 	
-	public void add(int id, DeltaType type) {
+	public void add(Card c, DeltaType type) {
+		int id = c.getId();
 		mDeltas.put(id, type);
+		mCardData.put(id, c);
 	}
-	public void addModified(int id) {
+	public void addModified(Card c) {
+		int id = c.getId();
 		mDeltas.put(id, DeltaType.MODIFIED);
+		mCardData.put(id, c);
 	}
-	public void addNew(int id) {
+	public void addNew(Card c) {
+		int id = c.getId();
 		mDeltas.put(id, DeltaType.ADDED);
+		mCardData.put(id, c);
 	}
-	public void addDeleted(int id) {
+	public void addDeleted(Card c) {
+		int id = c.getId();
 		mDeltas.put(id, DeltaType.DELETED);
+		mCardData.put(id, c);
 	}
 }
