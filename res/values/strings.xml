@@ -3,6 +3,6 @@
 
     <string name="app_name">MA Database History</string>
     <string name="action_settings">Settings</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="icon_description">Card Icon</string>
 
 </resources>
