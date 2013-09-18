@@ -59,7 +59,7 @@ public class DatabaseFileManager {
 		{
 			mDeltaChain.add(pHead);
 			File fDelta = new File(f,
-					String.format(Locale.getDefault(), "%ld", pHead));
+					String.format(Locale.getDefault(), "%d", pHead));
 			try {
 				ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fDelta));
 				long oldHead = pHead;
@@ -100,7 +100,7 @@ public class DatabaseFileManager {
 		long deltaTimestamp = delta.getCreatedAt().getTime();
 		try {
 			File headDelta = new File(f,
-					String.format(Locale.getDefault(), "%ld", deltaTimestamp));
+					String.format(Locale.getDefault(), "%d", deltaTimestamp));
 			ObjectOutputStream delta_oos = new ObjectOutputStream(new FileOutputStream(headDelta));
 			delta_oos.writeLong(pOldHead);
 			delta_oos.writeObject(delta);

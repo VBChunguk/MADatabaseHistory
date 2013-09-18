@@ -1,11 +1,10 @@
 package com.zotca.vbc.dbhistory;
 
-import java.util.HashMap;
-
 import com.zotca.vbc.dbhistory.core.CardDatabase;
 import com.zotca.vbc.dbhistory.core.DatabaseDelta;
 
 import android.content.Context;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -14,10 +13,12 @@ import android.widget.TextView;
 public class CardListAdapter extends ArrayAdapter<CardDatabase.Card> {
 
 	private DatabaseDelta mDelta;
-	private HashMap<Integer, DatabaseDelta.DeltaType> mDeltaType;
+	private SparseArray<DatabaseDelta.DeltaType> mDeltaType;
 	
 	public CardListAdapter(Context context, DatabaseDelta delta) {
 		super(context, R.layout.item_cardlist, R.id.name);
+		mDelta = delta;
+		mDeltaType = new SparseArray<DatabaseDelta.DeltaType>();
 		for (int id : mDelta.getCardIdSet())
 		{
 			this.add(mDelta.getCard(id));
