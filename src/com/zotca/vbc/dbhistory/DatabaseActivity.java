@@ -2,9 +2,10 @@ package com.zotca.vbc.dbhistory;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 
-public class DatabaseActivity extends Activity {
+public class DatabaseActivity extends FragmentActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
