@@ -230,6 +230,12 @@ public class CardDatabase implements Serializable {
 	public DatabaseDelta makeDelta(CardDatabase previous) {
 		DatabaseDelta ret = new DatabaseDelta(mCreatedAt);
 		Hashtable<Integer, Card> cdb = this.mIdCardDict;
+		if (previous == null) // initial
+		{
+			for (int k : cdb.keySet())
+				ret.addNew(k);
+			return ret;
+		}
 		Hashtable<Integer, Card> pdb = previous.mIdCardDict;
 		boolean hasDelta = false;
 		// deleted first
