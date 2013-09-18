@@ -1,23 +1,25 @@
 package com.zotca.vbc.dbhistory;
 
+import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
+
 import android.os.Bundle;
-import android.app.Activity;
 import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
+import android.support.v4.view.ViewPager;
 
 public class DatabaseActivity extends FragmentActivity {
 
+	private CardListPagerAdapter mPagerAdapter;
+	private DatabaseFileManager mFileManager;
+	private ViewPager mViewPager;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_database);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.database, menu);
-		return true;
+		mFileManager = new DatabaseFileManager(this.getFilesDir());
+		mPagerAdapter = new CardListPagerAdapter(this.getSupportFragmentManager(), mFileManager);
+		mViewPager = (ViewPager) this.findViewById(R.id.pager);
+		mViewPager.setAdapter(mPagerAdapter);
 	}
 
 }
