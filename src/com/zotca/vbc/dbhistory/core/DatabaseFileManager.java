@@ -19,6 +19,7 @@ public class DatabaseFileManager {
 
 	private LinkedList<Long> mDeltaChain;
 	private Hashtable<Long, DatabaseDelta> mDeltaTable;
+	private CardDatabase mHead;
 	
 	public DatabaseFileManager(File f) {
 		CardDatabase snapshot = makeSnapshot();
@@ -27,46 +28,25 @@ public class DatabaseFileManager {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(head));
 			pHeadDelta = ois.readLong();
+			mHead = (CardDatabase) ois.readObject();
 			ois.close();
 		} catch (FileNotFoundException e) { // don't have HEAD, make new DB
-			makeNewHead(f, snapshot);
-			return;
+			pHeadDelta = makeNewHead(f, snapshot);
 		} catch (StreamCorruptedException e) {
 			e.printStackTrace();
-			makeNewHead(f, snapshot);
-			return;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
-		
-		File head_db = new File(f, String.format(Locale.getDefault(), "%ld", pHeadDelta));
-		DatabaseDelta delta;
-		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(head_db));
-			ois.readLong();
-			ois.readObject();
-			CardDatabase db = (CardDatabase) ois.readObject();
-			ois.close();
-			delta = snapshot.makeDelta(db);
-		} catch (StreamCorruptedException e) {
-			e.printStackTrace();
-			makeNewHead(f, snapshot);
-			return;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			makeNewHead(f, snapshot);
-			return;
+			pHeadDelta = makeNewHead(f, snapshot);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			return;
+			pHeadDelta = makeNewHead(f, snapshot);
 		}
+		
+		DatabaseDelta delta = snapshot.makeDelta(mHead);
 		if (delta != null) // modified!
 		{
 			pHeadDelta = makeDelta(f, pHeadDelta, delta, snapshot);
+			mHead = snapshot;
 		}
 		// link all
 		generateChain(f, pHeadDelta);
@@ -103,9 +83,16 @@ public class DatabaseFileManager {
 		}
 	}
 	
-	private static void makeNewHead(File f, CardDatabase snapshot) {
+	private static long makeNewHead(File f, CardDatabase snapshot) {
 		DatabaseDelta delta = snapshot.makeDelta(null);
-		makeDelta(f, 0, delta, snapshot);
+		return makeDelta(f, 0, delta, snapshot);
+	}
+	
+	public LinkedList<Long> getChain() {
+		return mDeltaChain;
+	}
+	public DatabaseDelta getDelta(long pDelta) {
+		return mDeltaTable.get(pDelta);
 	}
 	
 	private static long makeDelta(File f,
@@ -117,7 +104,6 @@ public class DatabaseFileManager {
 			ObjectOutputStream delta_oos = new ObjectOutputStream(new FileOutputStream(headDelta));
 			delta_oos.writeLong(pOldHead);
 			delta_oos.writeObject(delta);
-			delta_oos.writeObject(snapshot);
 			delta_oos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -131,6 +117,7 @@ public class DatabaseFileManager {
 			File head = new File(f, "HEAD");
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(head));
 			oos.writeLong(deltaTimestamp);
+			oos.writeObject(snapshot);
 			oos.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

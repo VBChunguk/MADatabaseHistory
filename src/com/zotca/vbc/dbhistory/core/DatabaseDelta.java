@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
@@ -19,7 +20,7 @@ public class DatabaseDelta implements Serializable {
 	private static final long serialVersionUID = -3200239727294074719L;
 	private static int CURRENT_VERSION = 1;
 	
-	public enum DeltaType {
+	public static enum DeltaType {
 		MODIFIED,
 		ADDED,
 		DELETED,
@@ -113,6 +114,12 @@ public class DatabaseDelta implements Serializable {
 	
 	public Date getCreatedAt() {
 		return mCreatedAt;
+	}
+	public Set<Integer> getCardIdSet() {
+		return mDeltas.keySet();
+	}
+	public Card getCard(int id) {
+		return mCardData.get(id);
 	}
 	
 	public void add(Card c, DeltaType type) {
