@@ -231,25 +231,36 @@ public class CardDatabase implements Serializable {
 		DatabaseDelta ret = new DatabaseDelta(mCreatedAt);
 		Hashtable<Integer, Card> cdb = this.mIdCardDict;
 		Hashtable<Integer, Card> pdb = previous.mIdCardDict;
+		boolean hasDelta = false;
 		// deleted first
 		for (int k : pdb.keySet())
 		{
 			if (!cdb.containsKey(k)) // deleted
+			{
 				ret.addDeleted(k);
+				hasDelta = true;
+			}
 		}
 		// then, modified / added
 		for (int k : cdb.keySet())
 		{
 			if (!pdb.containsKey(k)) // added
+			{
 				ret.addNew(k);
+				hasDelta = true;
+			}
 			else
 			{
 				Card cc = cdb.get(k);
 				Card pc = pdb.get(k);
 				if (!cc.equals(pc)) // modified
+				{
 					ret.addModified(k);
+					hasDelta = true;
+				}
 			}
 		}
+		if (!hasDelta) return null;
 		return ret;
 	}
 }
