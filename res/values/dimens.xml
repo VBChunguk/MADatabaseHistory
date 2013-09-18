@@ -4,6 +4,6 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="icon_margin">2dp</dimen>
-    <dimen name="icon_size">20dp</dimen>
+    <dimen name="icon_size">40dp</dimen>
 
 </resources>
