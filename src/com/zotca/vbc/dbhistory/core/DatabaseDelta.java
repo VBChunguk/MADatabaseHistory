@@ -121,6 +121,9 @@ public class DatabaseDelta implements Serializable {
 	public Card getCard(int id) {
 		return mCardData.get(id);
 	}
+	public DeltaType getDeltaType(int id) {
+		return mDeltas.get(id);
+	}
 	
 	public void add(Card c, DeltaType type) {
 		int id = c.getId();
