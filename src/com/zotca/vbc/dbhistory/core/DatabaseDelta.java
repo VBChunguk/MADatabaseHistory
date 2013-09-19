@@ -24,6 +24,7 @@ public class DatabaseDelta implements Serializable {
 		MODIFIED,
 		ADDED,
 		DELETED,
+		INIT,
 	}
 	
 	private Hashtable<Integer, DeltaType> mDeltas;
@@ -79,6 +80,9 @@ public class DatabaseDelta implements Serializable {
 			case 2:
 				type = DeltaType.DELETED;
 				break;
+			case 3:
+				type = DeltaType.INIT;
+				break;
 			default:
 				throw new ClassNotFoundException("Invalid DeltaType");
 			}
@@ -107,6 +111,9 @@ public class DatabaseDelta implements Serializable {
 				break;
 			case DELETED:
 				out.writeByte(2);
+				break;
+			case INIT:
+				out.writeByte(3);
 				break;
 			default:
 				out.writeByte(0xff);
@@ -147,6 +154,11 @@ public class DatabaseDelta implements Serializable {
 	public void addDeleted(Card c) {
 		int id = c.getId();
 		mDeltas.put(id, DeltaType.DELETED);
+		mCardData.put(id, c);
+	}
+	public void addFirst(Card c) {
+		int id = c.getId();
+		mDeltas.put(id, DeltaType.INIT);
 		mCardData.put(id, c);
 	}
 }

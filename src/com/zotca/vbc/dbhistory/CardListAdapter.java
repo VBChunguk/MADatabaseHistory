@@ -43,6 +43,9 @@ public class CardListAdapter extends ArrayAdapter<CardDatabase.Card> {
 		case DELETED:
 			deltaInfo.setText(R.string.delta_deleted);
 			break;
+		case INIT:
+			deltaInfo.setText(R.string.delta_init);
+			break;
 		}
 		return v;
 	}

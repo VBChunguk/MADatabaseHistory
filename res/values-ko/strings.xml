@@ -6,5 +6,6 @@
     <string name="delta_modified">수정됨</string>
     <string name="delta_added">새 카드</string>
     <string name="delta_deleted">삭제됨</string>
+    <string name="delta_init">최초 데이터베이스</string>
     
 </resources>
