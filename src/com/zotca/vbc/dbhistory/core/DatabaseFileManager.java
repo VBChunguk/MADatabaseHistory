@@ -13,6 +13,9 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import com.zotca.vbc.dbhistory.DatabaseActivity;
+import com.zotca.vbc.dbhistory.R;
+
 import android.os.Environment;
 
 public class DatabaseFileManager {
@@ -20,8 +23,11 @@ public class DatabaseFileManager {
 	private LinkedList<Long> mDeltaChain;
 	private Hashtable<Long, DatabaseDelta> mDeltaTable;
 	private CardDatabase mHead;
+	private DatabaseActivity.DialogModifier mDF;
 	
-	public DatabaseFileManager(File f) {
+	public DatabaseFileManager(File f, DatabaseActivity.DialogModifier df) {
+		mDF = df;
+		mDF.setMessage(R.string.progress_db_datecheck);
 		File extstorage = Environment.getExternalStorageDirectory();
 		File db = new File(extstorage,
 				"Android/data/com.square_enix.million_kr/files/save/database/master_card");
@@ -46,24 +52,26 @@ public class DatabaseFileManager {
 			ois.close();
 			madeNewHead = false;
 		} catch (FileNotFoundException e) { // don't have HEAD, make new DB
-			pHeadDelta = makeNewHead(f, null);
+			pHeadDelta = makeNewHead(f, null, df);
 		} catch (StreamCorruptedException e) {
 			e.printStackTrace();
-			pHeadDelta = makeNewHead(f, null);
+			pHeadDelta = makeNewHead(f, null, df);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		} catch (ClassNotFoundException e) {
-			pHeadDelta = makeNewHead(f, null);
+			pHeadDelta = makeNewHead(f, null, df);
 		}
 		
 		if (!madeNewHead)
 		{
-			CardDatabase snapshot = makeSnapshot();
+			CardDatabase snapshot = makeSnapshot(df);
+			df.setTitle(R.string.progress_process_db);
+			df.setMessage(R.string.progress_db_diff);
 			DatabaseDelta delta = snapshot.makeDelta(mHead);
 			if (delta != null) // modified!
 			{
-				pHeadDelta = makeDelta(f, pHeadDelta, delta, snapshot);
+				pHeadDelta = makeDelta(f, pHeadDelta, delta, snapshot, df);
 				mHead = snapshot;
 			}
 		}
@@ -72,6 +80,8 @@ public class DatabaseFileManager {
 	}
 	
 	private void generateChain(File f, long pHead) {
+		mDF.setTitle(R.string.progress_loading_db);
+		mDF.setMessage(R.string.progress_db_chain);
 		mDeltaChain = new LinkedList<Long>();
 		mDeltaTable = new Hashtable<Long, DatabaseDelta>();
 		while (pHead != 0)
@@ -102,10 +112,13 @@ public class DatabaseFileManager {
 		}
 	}
 	
-	private static long makeNewHead(File f, CardDatabase snapshot) {
-		if (snapshot == null) snapshot = makeSnapshot();
+	private static long makeNewHead(File f, CardDatabase snapshot,
+			DatabaseActivity.DialogModifier df) {
+		if (snapshot == null) snapshot = makeSnapshot(df);
+		df.setTitle(R.string.progress_process_db);
+		df.setMessage(R.string.progress_db_diff);
 		DatabaseDelta delta = snapshot.makeDelta(null);
-		return makeDelta(f, 0, delta, snapshot);
+		return makeDelta(f, 0, delta, snapshot, df);
 	}
 	
 	public LinkedList<Long> getChain() {
@@ -115,8 +128,10 @@ public class DatabaseFileManager {
 		return mDeltaTable.get(pDelta);
 	}
 	
-	private static long makeDelta(File f,
-			long pOldHead, DatabaseDelta delta, CardDatabase snapshot) {
+	private static long makeDelta(File f, long pOldHead,
+			DatabaseDelta delta, CardDatabase snapshot, DatabaseActivity.DialogModifier df) {
+		df.setTitle(R.string.progress_process_db);
+		df.setMessage(R.string.progress_db_savediff);
 		long deltaTimestamp = delta.getCreatedAt().getTime();
 		try {
 			File headDelta = new File(f,
@@ -133,6 +148,7 @@ public class DatabaseFileManager {
 			return 0;
 		}
 		
+		df.setMessage(R.string.progress_db_savesnapshot);
 		try {
 			File head = new File(f, "HEAD");
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(head));
@@ -167,5 +183,13 @@ public class DatabaseFileManager {
 			e.printStackTrace();
 		}
 		return ret;
+	}
+	public static CardDatabase makeSnapshot(DatabaseActivity.DialogModifier df) {
+		if (df != null)
+		{
+			df.setTitle(R.string.progress_process_db);
+			df.setMessage(R.string.progress_db_snapshot);
+		}
+		return makeSnapshot();
 	}
 }

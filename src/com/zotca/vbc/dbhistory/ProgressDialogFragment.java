@@ -45,7 +45,7 @@ public class ProgressDialogFragment extends DialogFragment {
 		dialog.setTitle(message);
 	}
 	public void setMessage(int resid) {
-		setMessage(this.getResources().getString(resid));
+		setMessage(this.getActivity().getResources().getString(resid));
 	}
 	public void setMessage(String message) {
 		ProgressDialog dialog = (ProgressDialog) this.getDialog();
