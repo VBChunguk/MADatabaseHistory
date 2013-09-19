@@ -9,6 +9,8 @@ import java.nio.ByteBuffer;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class CardDatabase implements Serializable {
 
@@ -230,38 +232,40 @@ public class CardDatabase implements Serializable {
 	public DatabaseDelta makeDelta(CardDatabase previous) {
 		DatabaseDelta ret = new DatabaseDelta(mCreatedAt);
 		Hashtable<Integer, Card> cdb = this.mIdCardDict;
+		Set<Entry<Integer, Card>> kcdb = cdb.entrySet();
 		if (previous == null) // initial
 		{
-			for (int k : cdb.keySet())
-				ret.addNew(cdb.get(k));
+			for (Entry<Integer, Card> item : kcdb)
+				ret.addNew(item.getValue());
 			return ret;
 		}
 		Hashtable<Integer, Card> pdb = previous.mIdCardDict;
+		Set<Entry<Integer, Card>> kpdb = pdb.entrySet();
 		boolean hasDelta = false;
 		// deleted first
-		for (int k : pdb.keySet())
+		for (Entry<Integer, Card> item : kpdb)
 		{
-			if (!cdb.containsKey(k)) // deleted
+			if (!cdb.containsKey(item.getKey())) // deleted
 			{
-				ret.addDeleted(pdb.get(k));
+				ret.addDeleted(item.getValue());
 				hasDelta = true;
 			}
 		}
 		// then, modified / added
-		for (int k : cdb.keySet())
+		for (Entry<Integer, Card> item : kcdb)
 		{
-			if (!pdb.containsKey(k)) // added
+			if (!pdb.containsKey(item.getKey())) // added
 			{
-				ret.addNew(cdb.get(k));
+				ret.addNew(item.getValue());
 				hasDelta = true;
 			}
 			else
 			{
-				Card cc = cdb.get(k);
-				Card pc = pdb.get(k);
+				Card cc = item.getValue();
+				Card pc = pdb.get(item.getKey());
 				if (!cc.equals(pc)) // modified
 				{
-					ret.addModified(cdb.get(k));
+					ret.addModified(cc);
 					hasDelta = true;
 				}
 			}

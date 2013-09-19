@@ -43,6 +43,7 @@ public class DatabaseDelta implements Serializable {
 	
 	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
 		int version = in.readInt();
+		System.out.println("int version = in.readInt(); => " + version);
 		switch (version)
 		{
 		case 1:
@@ -86,9 +87,11 @@ public class DatabaseDelta implements Serializable {
 		}
 	}
 	
-	public void writeObject(ObjectOutputStream out) throws IOException {
+	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(CURRENT_VERSION);
+		System.out.println(CURRENT_VERSION + " => out.writeInt(CURRENT_VERSION);");
 		out.writeObject(mCreatedAt);
+		System.out.println("out.writeObject(mCreatedAt);");
 		int len = mDeltas.size();
 		out.writeInt(len);
 		for (Entry<Integer, DeltaType> item : mDeltas.entrySet())
@@ -109,6 +112,7 @@ public class DatabaseDelta implements Serializable {
 				out.writeByte(0xff);
 				break;
 			}
+			out.writeObject(mCardData.get(item.getKey()));
 		}
 	}
 	

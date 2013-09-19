@@ -22,31 +22,50 @@ public class DatabaseFileManager {
 	private CardDatabase mHead;
 	
 	public DatabaseFileManager(File f) {
-		CardDatabase snapshot = makeSnapshot();
+		File extstorage = Environment.getExternalStorageDirectory();
+		File db = new File(extstorage,
+				"Android/data/com.square_enix.million_kr/files/save/database/master_card");
+		
 		File head = new File(f, "HEAD");
 		long pHeadDelta;
+		boolean madeNewHead = true;
+		ObjectInputStream ois;
 		try {
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(head));
+			ois = new ObjectInputStream(new FileInputStream(head));
 			pHeadDelta = ois.readLong();
-			mHead = (CardDatabase) ois.readObject();
+			if (pHeadDelta != db.lastModified())
+			{
+				mHead = (CardDatabase) ois.readObject();
+			}
+			else
+			{
+				ois.close();
+				generateChain(f, pHeadDelta);
+				return;
+			}
 			ois.close();
+			madeNewHead = false;
 		} catch (FileNotFoundException e) { // don't have HEAD, make new DB
-			pHeadDelta = makeNewHead(f, snapshot);
+			pHeadDelta = makeNewHead(f, null);
 		} catch (StreamCorruptedException e) {
 			e.printStackTrace();
-			pHeadDelta = makeNewHead(f, snapshot);
+			pHeadDelta = makeNewHead(f, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		} catch (ClassNotFoundException e) {
-			pHeadDelta = makeNewHead(f, snapshot);
+			pHeadDelta = makeNewHead(f, null);
 		}
 		
-		DatabaseDelta delta = snapshot.makeDelta(mHead);
-		if (delta != null) // modified!
+		if (!madeNewHead)
 		{
-			pHeadDelta = makeDelta(f, pHeadDelta, delta, snapshot);
-			mHead = snapshot;
+			CardDatabase snapshot = makeSnapshot();
+			DatabaseDelta delta = snapshot.makeDelta(mHead);
+			if (delta != null) // modified!
+			{
+				pHeadDelta = makeDelta(f, pHeadDelta, delta, snapshot);
+				mHead = snapshot;
+			}
 		}
 		// link all
 		generateChain(f, pHeadDelta);
@@ -84,6 +103,7 @@ public class DatabaseFileManager {
 	}
 	
 	private static long makeNewHead(File f, CardDatabase snapshot) {
+		if (snapshot == null) snapshot = makeSnapshot();
 		DatabaseDelta delta = snapshot.makeDelta(null);
 		return makeDelta(f, 0, delta, snapshot);
 	}
