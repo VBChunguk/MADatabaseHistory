@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="progress_init_db">데이터베이스 확인 중</string>
+    <string name="progress_process_db">데이터베이스 처리 중</string>
+    <string name="progress_loading_db">데이터베이스 로드 중</string>
+    <string name="progress_db_datecheck">최종 수정일 확인 중</string>
+    <string name="progress_db_chain">체인 생성 중</string>
+    <string name="progress_db_snapshot">스냅샷 생성 중</string>
+    <string name="progress_db_diff">차이점 계산 중</string>
+    <string name="progress_db_savediff">차이점 저장 중</string>
+    <string name="progress_db_savesnapshot">스냅샷 저장 중</string>
+    
+</resources>

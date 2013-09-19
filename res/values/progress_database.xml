@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    
     <string name="progress_init_db">Checking database</string>
     <string name="progress_process_db">Processing database</string>
     <string name="progress_loading_db">Loading database</string>
@@ -9,4 +10,5 @@
     <string name="progress_db_diff">Calculating difference</string>
     <string name="progress_db_savediff">Saving difference</string>
     <string name="progress_db_savesnapshot">Saving snapshot</string>
+    
 </resources>
