@@ -236,7 +236,7 @@ public class CardDatabase implements Serializable {
 		if (previous == null) // initial
 		{
 			for (Entry<Integer, Card> item : kcdb)
-				ret.addNew(item.getValue());
+				ret.addFirst(item.getValue());
 			return ret;
 		}
 		Hashtable<Integer, Card> pdb = previous.mIdCardDict;
