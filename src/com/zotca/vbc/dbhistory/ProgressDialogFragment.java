@@ -22,12 +22,12 @@ public class ProgressDialogFragment extends DialogFragment {
 		if (title == null)
 		{
 			if (title_id != 0) title = this.getResources().getString(title_id);
-			else title = "";
+			else title = " ";
 		}
 		if (message == null)
 		{
 			if (message_id != 0) message = this.getResources().getString(message_id);
-			else message = "";
+			else message = " ";
 		}
 		ProgressDialog dialog = new ProgressDialog(this.getActivity(), ProgressDialog.STYLE_SPINNER);
 		dialog.setIndeterminate(true);

@@ -13,20 +13,128 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Locale;
 
-import com.zotca.vbc.dbhistory.DatabaseActivity;
+import com.zotca.vbc.dbhistory.ProgressDialogFragment;
 import com.zotca.vbc.dbhistory.R;
 
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.support.v4.app.FragmentActivity;
 
 public class DatabaseFileManager {
 
+	public static class DialogModifier {
+		
+		protected ProgressDialogFragment mDialog;
+		protected Handler mHandler;
+		protected FragmentActivity mActivity;
+		
+		public DialogModifier(ProgressDialogFragment d, FragmentActivity activity) {
+			mDialog = d;
+			mHandler = new Handler();
+			mActivity = activity;
+		}
+		
+		public Handler getHandler() {
+			return mHandler;
+		}
+		
+		public void setTitle(final int resid) {
+			mHandler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					mDialog.setTitle(resid);
+				}
+				
+			});
+		}
+		public void setTitle(final String title) {
+			mHandler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					mDialog.setTitle(title);
+				}
+				
+			});
+		}
+		public void setMessage(final int resid) {
+			mHandler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					mDialog.setMessage(mActivity.getResources().getString(resid));
+				}
+				
+			});
+		}
+		public void setMessage(final String message) {
+			mHandler.post(new Runnable() {
+
+				@Override
+				public void run() {
+					mDialog.setMessage(message);
+				}
+				
+			});
+		}
+	}
+
+	public static interface PostProcessHandler {
+		void onPostProcess(DatabaseFileManager manager);
+	}
+	
+	private static DatabaseFileManager mObject = null;
+	private static boolean mProcessing = false;
+	
+	public static DatabaseFileManager getManager(
+			final FragmentActivity activity,
+			final PostProcessHandler runAfter)
+	{
+		if (mProcessing == true)
+		{
+			return null;
+		}
+		if (mObject == null)
+		{
+			final ProgressDialogFragment df = new ProgressDialogFragment();
+			Bundle args = new Bundle();
+			df.setArguments(args);
+			final DialogModifier modifier = new DialogModifier(df, activity);
+			final Handler handler = modifier.getHandler();
+			Thread thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					mObject = new DatabaseFileManager(activity.getFilesDir(), modifier);
+					handler.post(new Runnable() {
+
+						@Override
+						public void run() {
+							runAfter.onPostProcess(mObject);
+							df.dismissAllowingStateLoss();
+						}
+						
+					});
+				}
+			});
+			df.show(activity.getSupportFragmentManager(), "");
+			thread.start();
+			return null;
+		}
+		runAfter.onPostProcess(mObject);
+		return mObject;
+	}
+	
+	
 	private LinkedList<Long> mDeltaChain;
 	private Hashtable<Long, DatabaseDelta> mDeltaTable;
 	private CardDatabase mHead;
-	private DatabaseActivity.DialogModifier mDF;
+	private DialogModifier mDF;
 	
-	public DatabaseFileManager(File f, DatabaseActivity.DialogModifier df) {
+	public DatabaseFileManager(File f, DialogModifier df) {
 		mDF = df;
+		mDF.setTitle(R.string.progress_init_db);
 		mDF.setMessage(R.string.progress_db_datecheck);
 		File extstorage = Environment.getExternalStorageDirectory();
 		File db = new File(extstorage,
@@ -112,8 +220,7 @@ public class DatabaseFileManager {
 		}
 	}
 	
-	private static long makeNewHead(File f, CardDatabase snapshot,
-			DatabaseActivity.DialogModifier df) {
+	private static long makeNewHead(File f, CardDatabase snapshot, DialogModifier df) {
 		if (snapshot == null) snapshot = makeSnapshot(df);
 		df.setTitle(R.string.progress_process_db);
 		df.setMessage(R.string.progress_db_diff);
@@ -129,7 +236,7 @@ public class DatabaseFileManager {
 	}
 	
 	private static long makeDelta(File f, long pOldHead,
-			DatabaseDelta delta, CardDatabase snapshot, DatabaseActivity.DialogModifier df) {
+			DatabaseDelta delta, CardDatabase snapshot, DialogModifier df) {
 		df.setTitle(R.string.progress_process_db);
 		df.setMessage(R.string.progress_db_savediff);
 		long deltaTimestamp = delta.getCreatedAt().getTime();
@@ -184,7 +291,7 @@ public class DatabaseFileManager {
 		}
 		return ret;
 	}
-	public static CardDatabase makeSnapshot(DatabaseActivity.DialogModifier df) {
+	public static CardDatabase makeSnapshot(DialogModifier df) {
 		if (df != null)
 		{
 			df.setTitle(R.string.progress_process_db);
