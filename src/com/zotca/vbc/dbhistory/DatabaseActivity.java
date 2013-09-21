@@ -2,9 +2,12 @@ package com.zotca.vbc.dbhistory;
 
 import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class DatabaseActivity extends FragmentActivity {
 
@@ -31,4 +34,23 @@ public class DatabaseActivity extends FragmentActivity {
 		});
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.database, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int id = item.getItemId();
+		switch (id)
+		{
+		case R.id.about:
+			this.startActivity(new Intent(this, AboutActivity.class));
+			break;
+		default:
+			return false;
+		}
+		return true;
+	}
 }
