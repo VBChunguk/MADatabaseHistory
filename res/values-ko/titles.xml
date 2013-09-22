@@ -2,5 +2,6 @@
 <resources>
     
     <string name="title_activity_about">정보</string>
+    <string name="title_activity_card">카드 역사</string>
     
 </resources>
