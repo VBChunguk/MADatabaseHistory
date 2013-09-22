@@ -30,6 +30,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zotca.vbc.dbhistory.DatabaseActivity" />
         </activity>
+        <activity
+            android:name="com.zotca.vbc.dbhistory.CardViewActivity"
+            android:label="@string/title_activity_card"
+            android:parentActivityName="com.zotca.vbc.dbhistory.DatabaseActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.zotca.vbc.dbhistory.DatabaseActivity" />
+        </activity>
     </application>
 
 </manifest>
