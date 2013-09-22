@@ -6,6 +6,7 @@ import java.util.Locale;
 import com.zotca.vbc.dbhistory.bitmap.BitmapLoader;
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -31,7 +32,10 @@ public class CardHistoryFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.fragment_cardinfo, container, false);
+		Configuration config = this.getResources().getConfiguration();
+		int layout = config.orientation == Configuration.ORIENTATION_LANDSCAPE ? 
+				R.layout.fragment_cardinfo_landscape : R.layout.fragment_cardinfo;
+		View v = inflater.inflate(layout, container, false);
 		Bundle args = this.getArguments();
 		Card card = (Card) args.getSerializable(ARG_CARD);
 		

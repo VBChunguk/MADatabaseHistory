@@ -4,6 +4,7 @@ import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -59,6 +60,16 @@ public class CardViewActivity extends FragmentActivity {
 		super.onSaveInstanceState(outState);
 		outState.putInt(ARG_ID, mId);
 		outState.putInt(ARG_PAGE, mViewPager.getCurrentItem());
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		
+		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
+		{
+			
+		}
 	}
 	
 	/**
