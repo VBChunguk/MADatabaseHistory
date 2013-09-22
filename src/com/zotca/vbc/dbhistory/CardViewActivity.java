@@ -4,7 +4,6 @@ import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -18,13 +17,11 @@ public class CardViewActivity extends FragmentActivity {
 	public static final String ARG_PAGE = "defaultPage";
 	
 	private int mId;
-	private DatabaseFileManager mFileManager;
 	private ViewPager mViewPager;
 	private CardHistoryPagerAdapter mPagerAdapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		mId = -1;
 		if (savedInstanceState != null) mId = savedInstanceState.getInt(ARG_ID, -1);
@@ -37,12 +34,11 @@ public class CardViewActivity extends FragmentActivity {
 		if (savedInstanceState != null) page = savedInstanceState.getInt(ARG_PAGE, -1);
 		else page = -1;
 		final long time = args.getLongExtra(ARG_PAGE, -1);
-		mFileManager = DatabaseFileManager.getManager(this,
+		DatabaseFileManager.getManager(this,
 				new DatabaseFileManager.PostProcessHandler() {
 			
 			@Override
 			public void onPostProcess(DatabaseFileManager manager) {
-				mFileManager = manager;
 				mPagerAdapter = new CardHistoryPagerAdapter(
 						getSupportFragmentManager(), manager, mId);
 				mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -60,16 +56,6 @@ public class CardViewActivity extends FragmentActivity {
 		super.onSaveInstanceState(outState);
 		outState.putInt(ARG_ID, mId);
 		outState.putInt(ARG_PAGE, mViewPager.getCurrentItem());
-	}
-	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		super.onConfigurationChanged(newConfig);
-		
-		if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT)
-		{
-			
-		}
 	}
 	
 	/**
