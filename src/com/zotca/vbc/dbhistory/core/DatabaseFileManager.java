@@ -15,11 +15,13 @@ import java.util.Locale;
 
 import com.zotca.vbc.dbhistory.ProgressDialogFragment;
 import com.zotca.vbc.dbhistory.R;
+import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.util.Pair;
 
 public class DatabaseFileManager {
 
@@ -220,19 +222,34 @@ public class DatabaseFileManager {
 		}
 	}
 	
+	public LinkedList<Long> getChain() {
+		return mDeltaChain;
+	}
+	public DatabaseDelta getDelta(long pDelta) {
+		return mDeltaTable.get(pDelta);
+	}
+	
+	public LinkedList<Pair<Long, Card>> getCard(int id) {
+		LinkedList<Pair<Long, Card>> ret = new LinkedList<Pair<Long, Card>>();
+		for (long time : mDeltaChain)
+		{
+			DatabaseDelta delta = mDeltaTable.get(time);
+			Card card = delta.getCard(id);
+			if (card != null)
+			{
+				ret.add(new Pair<Long, Card>(time, card));
+			}
+		}
+		return ret;
+	}
+	
+	
 	private static long makeNewHead(File f, CardDatabase snapshot, DialogModifier df) {
 		if (snapshot == null) snapshot = makeSnapshot(df);
 		df.setTitle(R.string.progress_process_db);
 		df.setMessage(R.string.progress_db_diff);
 		DatabaseDelta delta = snapshot.makeDelta(null);
 		return makeDelta(f, 0, delta, snapshot, df);
-	}
-	
-	public LinkedList<Long> getChain() {
-		return mDeltaChain;
-	}
-	public DatabaseDelta getDelta(long pDelta) {
-		return mDeltaTable.get(pDelta);
 	}
 	
 	private static long makeDelta(File f, long pOldHead,
