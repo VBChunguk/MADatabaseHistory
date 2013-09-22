@@ -2,11 +2,15 @@ package com.zotca.vbc.dbhistory;
 
 import com.zotca.vbc.dbhistory.core.DatabaseDelta;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 public class CardListFragment extends Fragment {
@@ -26,6 +30,20 @@ public class CardListFragment extends Fragment {
 		mDelta = (DatabaseDelta) args.getSerializable(ARG_DELTA);
 		ListView listView = (ListView) rootView;
 		listView.setAdapter(new CardListAdapter(inflater.getContext(), mDelta));
+		final Context ctx = inflater.getContext();
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position,
+					long id) {
+				Intent args = new Intent(ctx, CardViewActivity.class);
+				int cardId = (Integer) v.getTag();
+				args.putExtra(CardViewActivity.ARG_ID, cardId);
+				args.putExtra(CardViewActivity.ARG_PAGE, mId);
+				startActivity(args);
+			}
+			
+		});
 		return rootView;
 	}
 }

@@ -13,7 +13,8 @@ import android.view.MenuItem;
 
 public class CardViewActivity extends FragmentActivity {
 
-	public static String ARG_ID = "id";
+	public static final String ARG_ID = "id";
+	public static final String ARG_PAGE = "defaultPage";
 	
 	private int mId;
 	private DatabaseFileManager mFileManager;
@@ -24,12 +25,17 @@ public class CardViewActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		mId = -1;
+		if (savedInstanceState != null) mId = savedInstanceState.getInt(ARG_ID, -1);
 		setContentView(R.layout.activity_database);
 		setupActionBar();
 		
 		Intent args = this.getIntent();
-		mId = args.getIntExtra(ARG_ID, 0);
-		
+		if (mId == -1) mId = args.getIntExtra(ARG_ID, 0);
+		final int page;
+		if (savedInstanceState != null) page = savedInstanceState.getInt(ARG_PAGE, -1);
+		else page = -1;
+		final long time = args.getLongExtra(ARG_PAGE, -1);
 		mFileManager = DatabaseFileManager.getManager(this,
 				new DatabaseFileManager.PostProcessHandler() {
 			
@@ -40,8 +46,19 @@ public class CardViewActivity extends FragmentActivity {
 						getSupportFragmentManager(), manager, mId);
 				mViewPager = (ViewPager) findViewById(R.id.pager);
 				mViewPager.setAdapter(mPagerAdapter);
+				if (page != -1)
+					mViewPager.setCurrentItem(page, false);
+				else if (time != -1)
+					mViewPager.setCurrentItem(mPagerAdapter.getIndexOf(time), false);
 			}
 		});
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(ARG_ID, mId);
+		outState.putInt(ARG_PAGE, mViewPager.getCurrentItem());
 	}
 	
 	/**

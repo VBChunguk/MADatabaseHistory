@@ -66,6 +66,7 @@ public class CardListAdapter extends ArrayAdapter<CardDatabase.Card> {
 			break;
 		}
 		
+		v.setTag(id);
 		File icon = new File(iconDir, String.format(Locale.getDefault(), "face_%d", id));
 		String iconPath = icon.getAbsolutePath();
 		ImageView imageView = (ImageView) v.findViewById(R.id.icon);
