@@ -32,25 +32,33 @@ public class CardHistoryFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		Configuration config = this.getResources().getConfiguration();
-		int layout = config.orientation == Configuration.ORIENTATION_LANDSCAPE ? 
+		final Configuration config = this.getResources().getConfiguration();
+		final int layout = config.orientation == Configuration.ORIENTATION_LANDSCAPE ? 
 				R.layout.fragment_cardinfo_landscape : R.layout.fragment_cardinfo;
-		View v = inflater.inflate(layout, container, false);
-		Bundle args = this.getArguments();
-		Card card = (Card) args.getSerializable(ARG_CARD);
+		final View v = inflater.inflate(layout, container, false);
+		final Bundle args = this.getArguments();
+		final Card card = (Card) args.getSerializable(ARG_CARD);
 		
-		TextView nameView = (TextView) v.findViewById(R.id.name);
-		TextView illustratorView = (TextView) v.findViewById(R.id.illustrator);
-		TextView descriptionView = (TextView) v.findViewById(R.id.description);
+		final TextView nameView = (TextView) v.findViewById(R.id.name);
+		final TextView illustratorView = (TextView) v.findViewById(R.id.illustrator);
+		final TextView descriptionView = (TextView) v.findViewById(R.id.description);
 		nameView.setText(card.getName());
 		illustratorView.setText(this.getResources().getString(
 				R.string.history_illustrated,
 				card.getIllustrator()));
 		descriptionView.setText(card.getDescription());
 		
-		File illust = new File(cardDir,
+		final TextView mainSkillView = (TextView) v.findViewById(R.id.main_skill_name);
+		final TextView subSkillView = (TextView) v.findViewById(R.id.sub_skill_name);
+		final TextView skillDescView = (TextView) v.findViewById(R.id.skill_description);
+		mainSkillView.setText(card.getSkillName());
+		if (!card.getSubSkillName().equals("0"))
+			subSkillView.setText("(" + card.getSubSkillName() + ")");
+		skillDescView.setText(card.getSkillDescription());
+		
+		final File illust = new File(cardDir,
 				String.format(Locale.getDefault(), "thumbnail_chara_%d", card.getId()));
-		ImageView illustView = (ImageView) v.findViewById(R.id.illust);
+		final ImageView illustView = (ImageView) v.findViewById(R.id.illust);
 		BitmapLoader.loadBitmap(this.getResources(), illust.getAbsolutePath(), illustView);
 		return v;
 	}

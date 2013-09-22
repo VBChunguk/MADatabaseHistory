@@ -8,5 +8,6 @@
     <string name="delta_deleted">Deleted</string>
     <string name="delta_init">First run</string>
     <string name="history_illustrated">Illustrated by %s</string>
+    <string name="history_skill">Skill</string>
 
 </resources>
