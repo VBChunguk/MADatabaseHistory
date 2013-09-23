@@ -38,6 +38,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.zotca.vbc.dbhistory.DatabaseActivity" />
         </activity>
+        <activity
+            android:name="com.zotca.vbc.dbhistory.IllustActivity"
+            android:label="@string/title_activity_illust" android:theme="@style/FullscreenTheme">
+        </activity>
     </application>
 
 </manifest>

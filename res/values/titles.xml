@@ -3,5 +3,6 @@
     
     <string name="title_activity_about">About</string>
     <string name="title_activity_card">Card History</string>
+    <string name="title_activity_illust">Illust Viewer</string>
     
 </resources>

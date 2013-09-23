@@ -3,5 +3,6 @@
     
     <string name="title_activity_about">정보</string>
     <string name="title_activity_card">카드 역사</string>
+    <string name="title_activity_illust">일러스트 뷰어</string>
     
 </resources>
