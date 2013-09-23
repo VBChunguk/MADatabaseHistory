@@ -10,11 +10,15 @@ import com.zotca.vbc.dbhistory.core.DatabaseDelta;
 import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.app.SearchManager;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
@@ -25,6 +29,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d("CardSearchResultActivity", "onCreate");
 		setContentView(R.layout.fragment_cardlist);
 		// Show the Up button in the action bar.
 		setupActionBar();
@@ -74,31 +79,50 @@ public class CardSearchResultActivity extends FragmentActivity {
 		handleIntent(intent);
 	}
 	
-	private void handleIntent(Intent intent) {
+	private void handleIntent(final Intent intent) {
 		if (mFileManager == null) return;
 		
 		if (Intent.ACTION_SEARCH.equals(intent.getAction()))
 		{
-			final String query = intent.getStringExtra(SearchManager.QUERY);
-			final LinkedList<Long> chain = mFileManager.getChain();
-			final ArrayList<Card> queryResult = new ArrayList<Card>();
-			final HashSet<Integer> resultIds = new HashSet<Integer>();
-			for (long time : chain)
-			{
-				final DatabaseDelta delta = mFileManager.getDelta(time);
-				final Set<Integer> cards = delta.getCardIdSet();
-				for (int id : cards)
-				{
-					if (queryResult.contains(id)) continue;
-					
-					final Card card = delta.getCard(id);
-					if (matchesAdvancedQuery(card.getName(), query))
+			final Handler handler = new Handler();
+			final Context ctx = this;
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					final String query = intent.getStringExtra(SearchManager.QUERY);
+					final LinkedList<Long> chain = mFileManager.getChain();
+					final ArrayList<Card> queryResult = new ArrayList<Card>();
+					final HashSet<Integer> resultIds = new HashSet<Integer>();
+					for (long time : chain)
 					{
-						queryResult.add(card);
-						resultIds.add(id);
+						final DatabaseDelta delta = mFileManager.getDelta(time);
+						final Set<Integer> cards = delta.getCardIdSet();
+						for (int id : cards)
+						{
+							if (queryResult.contains(id)) continue;
+							
+							final Card card = delta.getCard(id);
+							if (matchesAdvancedQuery(card.getName(), query))
+							{
+								queryResult.add(card);
+								resultIds.add(id);
+							}
+						}
 					}
+					
+					handler.post(new Runnable() {
+
+						@Override
+						public void run() {
+							ListView listView = (ListView) findViewById(android.R.id.list);
+							SearchResultAdapter adapter = new SearchResultAdapter(ctx, queryResult);
+							listView.setAdapter(adapter);
+						}
+						
+					});
 				}
-			}
+			}).start();
 		}
 	}
 	
