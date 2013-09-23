@@ -6,12 +6,15 @@ import java.util.Locale;
 import com.zotca.vbc.dbhistory.bitmap.BitmapLoader;
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,6 +62,18 @@ public class CardHistoryFragment extends Fragment {
 		final File illust = new File(cardDir,
 				String.format(Locale.getDefault(), "thumbnail_chara_%d", card.getId()));
 		final ImageView illustView = (ImageView) v.findViewById(R.id.illust);
+		final Context ctx = this.getActivity();
+		illustView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent args = new Intent(ctx, IllustActivity.class);
+				args.putExtra(IllustActivity.ARG_ID, card.getId());
+				args.putExtra(IllustActivity.ARG_ID_AROUSAL, card.getArousalIllustId());
+				startActivity(args);
+			}
+			
+		});
 		BitmapLoader.loadBitmap(this.getResources(), illust.getAbsolutePath(), illustView);
 		return v;
 	}
