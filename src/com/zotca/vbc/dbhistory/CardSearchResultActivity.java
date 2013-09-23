@@ -15,8 +15,11 @@ import android.app.SearchManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
@@ -35,6 +38,21 @@ public class CardSearchResultActivity extends FragmentActivity {
 		setContentView(R.layout.fragment_cardlist);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		
+		final ListView listView = (ListView) findViewById(android.R.id.list);
+		final Context ctx = this;
+		listView.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View v, int position,
+					long id) {
+				Intent args = new Intent(ctx, CardViewActivity.class);
+				int cardId = (Integer) v.getTag();
+				args.putExtra(CardViewActivity.ARG_ID, cardId);
+				startActivity(args);
+			}
+			
+		});
 		
 		mFileManager = DatabaseFileManager.getManager(this,
 				new DatabaseFileManager.PostProcessHandler() {
