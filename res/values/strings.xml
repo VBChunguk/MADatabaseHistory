@@ -11,5 +11,6 @@
     <string name="history_skill">Skill</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="search_hint">Card name</string>
 
 </resources>
