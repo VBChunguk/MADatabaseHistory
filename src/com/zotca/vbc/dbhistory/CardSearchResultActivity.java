@@ -12,7 +12,6 @@ import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.app.SearchManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +33,6 @@ public class CardSearchResultActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Log.d("CardSearchResultActivity", "onCreate");
 		setContentView(R.layout.fragment_cardlist);
 		// Show the Up button in the action bar.
 		setupActionBar();
@@ -88,6 +86,14 @@ public class CardSearchResultActivity extends FragmentActivity {
 		            (SearchView) menu.findItem(R.id.search).getActionView();
 		    searchView.setSearchableInfo(
 		            searchManager.getSearchableInfo(getComponentName()));
+		    searchView.setOnSearchClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					SearchView searchView = (SearchView) v;
+					searchView.setQuery(query, false);
+				}
+			});
 		}
 		return true;
 	}
@@ -120,6 +126,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 		handleIntent(intent);
 	}
 	
+	private String query;
 	private void handleIntent(final Intent intent) {
 		if (mFileManager == null) return;
 		
@@ -127,7 +134,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 		{
 			final Handler handler = new Handler();
 			final Context ctx = this;
-			final String query = intent.getStringExtra(SearchManager.QUERY);
+			query = intent.getStringExtra(SearchManager.QUERY);
 			this.setTitle(query);
 			new Thread(new Runnable() {
 
