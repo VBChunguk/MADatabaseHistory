@@ -71,6 +71,6 @@ public class DatabaseActivity extends FragmentActivity {
 		default:
 			return false;
 		}
-		return true;
+		return super.onOptionsItemSelected(item);
 	}
 }

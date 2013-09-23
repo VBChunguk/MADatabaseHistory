@@ -13,8 +13,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.app.SearchManager;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
@@ -55,6 +57,23 @@ public class CardSearchResultActivity extends FragmentActivity {
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.search, menu);
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+		{
+			SearchManager searchManager =
+		           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+		    SearchView searchView =
+		            (SearchView) menu.findItem(R.id.search).getActionView();
+		    searchView.setSearchableInfo(
+		            searchManager.getSearchableInfo(getComponentName()));
+		}
+		return true;
+	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -67,6 +86,10 @@ public class CardSearchResultActivity extends FragmentActivity {
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
 			NavUtils.navigateUpFromSameTask(this);
+			return true;
+		case R.id.search:
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
+				this.onSearchRequested();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -86,11 +109,12 @@ public class CardSearchResultActivity extends FragmentActivity {
 		{
 			final Handler handler = new Handler();
 			final Context ctx = this;
+			final String query = intent.getStringExtra(SearchManager.QUERY);
+			this.setTitle(query);
 			new Thread(new Runnable() {
 
 				@Override
 				public void run() {
-					final String query = intent.getStringExtra(SearchManager.QUERY);
 					final LinkedList<Long> chain = mFileManager.getChain();
 					final ArrayList<Card> queryResult = new ArrayList<Card>();
 					final HashSet<Integer> resultIds = new HashSet<Integer>();
