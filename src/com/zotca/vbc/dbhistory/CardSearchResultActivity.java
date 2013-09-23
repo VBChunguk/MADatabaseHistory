@@ -113,7 +113,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 			return true;
 		case R.id.search:
 			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-				this.onSearchRequested();
+				startSearch(query, false, null, false);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
