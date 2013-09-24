@@ -42,10 +42,8 @@ public class CardHistoryFragment extends Fragment {
 		final Bundle args = this.getArguments();
 		final Card card = (Card) args.getSerializable(ARG_CARD);
 		
-		final TextView nameView = (TextView) v.findViewById(R.id.name);
 		final TextView illustratorView = (TextView) v.findViewById(R.id.illustrator);
 		final TextView descriptionView = (TextView) v.findViewById(R.id.description);
-		nameView.setText(card.getName());
 		illustratorView.setText(this.getResources().getString(
 				R.string.history_illustrated,
 				card.getIllustrator()));

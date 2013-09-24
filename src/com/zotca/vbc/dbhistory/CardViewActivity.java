@@ -47,6 +47,23 @@ public class CardViewActivity extends FragmentActivity {
 					mViewPager.setCurrentItem(page, false);
 				else if (time != -1)
 					mViewPager.setCurrentItem(mPagerAdapter.getIndexOf(time), false);
+				setTitle(mPagerAdapter.getPageCardName(mViewPager.getCurrentItem()));
+				mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+					@Override
+					public void onPageScrollStateChanged(int arg0) {
+					}
+
+					@Override
+					public void onPageScrolled(int arg0, float arg1, int arg2) {
+					}
+
+					@Override
+					public void onPageSelected(int position) {
+						setTitle(mPagerAdapter.getPageCardName(position));
+					}
+					
+				});
 			}
 		});
 	}

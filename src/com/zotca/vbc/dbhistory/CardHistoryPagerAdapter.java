@@ -54,4 +54,8 @@ public class CardHistoryPagerAdapter extends FragmentStatePagerAdapter {
 		return SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, Locale.getDefault())
 				   .format(date);
 	}
+	
+	public String getPageCardName(int position) {
+		return mHistory.get(position).second.getName();
+	}
 }
