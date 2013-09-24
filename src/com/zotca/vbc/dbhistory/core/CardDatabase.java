@@ -29,8 +29,14 @@ public class CardDatabase implements Serializable {
 
 		private static int CURRENT_VERSION = 1;
 		
+		public static final int BLADE = 1;
+		public static final int TECHNIQUE = 2;
+		public static final int MAGIC = 3;
+		public static final int FAIRY = 4;
+		
 		private String name;
 		private int id;
+		private int category;
 		private int cost;
 		private int normalIllust;
 		private int arousalIllust;
@@ -45,7 +51,7 @@ public class CardDatabase implements Serializable {
 		public Card(ByteBuffer in)
 		{
 			id = in.getInt();
-			in.position(in.position()+4);
+			category = in.getInt();
 			name = ReadUtility.readMAString(in);
 			description = ReadUtility.readMAString(in);
 			subSkillName = ReadUtility.readMAString(in);
@@ -64,6 +70,7 @@ public class CardDatabase implements Serializable {
 			{
 			case 1:
 				id = in.readInt();
+				category = in.readInt();
 				cost = in.readInt();
 				name = (String) in.readObject();
 				description = (String) in.readObject();
@@ -82,6 +89,7 @@ public class CardDatabase implements Serializable {
 			out.writeInt(CURRENT_VERSION); // version 1
 			
 			out.writeInt(id);
+			out.writeInt(category);
 			out.writeInt(cost);
 			out.writeObject(name);
 			out.writeObject(description);
@@ -100,6 +108,10 @@ public class CardDatabase implements Serializable {
 		public int getId()
 		{
 			return id;
+		}
+		public int getCategory()
+		{
+			return category;
 		}
 		public int getCost()
 		{
