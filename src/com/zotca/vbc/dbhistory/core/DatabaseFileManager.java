@@ -135,9 +135,16 @@ public class DatabaseFileManager {
 	private DialogModifier mDF;
 	
 	public DatabaseFileManager(File f, DialogModifier df) {
+		reloadDatabase(f, df);
+	}
+	
+	public void reloadDatabase(File f, DialogModifier df) {
 		mDF = df;
-		mDF.setTitle(R.string.progress_init_db);
-		mDF.setMessage(R.string.progress_db_datecheck);
+		if (mDF != null)
+		{
+			mDF.setTitle(R.string.progress_init_db);
+			mDF.setMessage(R.string.progress_db_datecheck);
+		}
 		File extstorage = Environment.getExternalStorageDirectory();
 		File db = new File(extstorage,
 				"Android/data/com.square_enix.million_kr/files/save/database/master_card");
@@ -188,10 +195,12 @@ public class DatabaseFileManager {
 		// link all
 		generateChain(f, pHeadDelta);
 	}
-	
 	private void generateChain(File f, long pHead) {
-		mDF.setTitle(R.string.progress_loading_db);
-		mDF.setMessage(R.string.progress_db_chain);
+		if (mDF != null)
+		{
+			mDF.setTitle(R.string.progress_loading_db);
+			mDF.setMessage(R.string.progress_db_chain);
+		}
 		mDeltaChain = new LinkedList<Long>();
 		mDeltaTable = new Hashtable<Long, DatabaseDelta>();
 		while (pHead != 0)
@@ -246,16 +255,22 @@ public class DatabaseFileManager {
 	
 	private static long makeNewHead(File f, CardDatabase snapshot, DialogModifier df) {
 		if (snapshot == null) snapshot = makeSnapshot(df);
-		df.setTitle(R.string.progress_process_db);
-		df.setMessage(R.string.progress_db_diff);
+		if (df != null)
+		{
+			df.setTitle(R.string.progress_process_db);
+			df.setMessage(R.string.progress_db_diff);
+		}
 		DatabaseDelta delta = snapshot.makeDelta(null);
 		return makeDelta(f, 0, delta, snapshot, df);
 	}
 	
 	private static long makeDelta(File f, long pOldHead,
 			DatabaseDelta delta, CardDatabase snapshot, DialogModifier df) {
-		df.setTitle(R.string.progress_process_db);
-		df.setMessage(R.string.progress_db_savediff);
+		if (df != null)
+		{
+			df.setTitle(R.string.progress_process_db);
+			df.setMessage(R.string.progress_db_savediff);
+		}
 		long deltaTimestamp = delta.getCreatedAt().getTime();
 		try {
 			File headDelta = new File(f,
@@ -272,7 +287,7 @@ public class DatabaseFileManager {
 			return 0;
 		}
 		
-		df.setMessage(R.string.progress_db_savesnapshot);
+		if (df != null) df.setMessage(R.string.progress_db_savesnapshot);
 		try {
 			File head = new File(f, "HEAD");
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(head));
