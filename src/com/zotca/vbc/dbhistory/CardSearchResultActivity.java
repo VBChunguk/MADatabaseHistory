@@ -152,7 +152,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 							if (queryResult.contains(id)) continue;
 							
 							final Card card = delta.getCard(id);
-							if (matchesAdvancedQuery(card.getName(), query))
+							if (matchesAdvancedQuery(card, query))
 							{
 								queryResult.add(card);
 								resultIds.add(id);
@@ -175,8 +175,9 @@ public class CardSearchResultActivity extends FragmentActivity {
 		}
 	}
 	
-	private static boolean matchesAdvancedQuery(String text, String query)
+	private static boolean matchesAdvancedQuery(Card card, String query)
 	{
+		final String text = card.getName();
 		boolean inQuotes = false;
 		boolean failed = false, passNext = false;
 		StringBuilder inProcessString = new StringBuilder();
@@ -194,7 +195,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 			{
 				if (c == ' ')
 				{
-					String res = inProcessString.toString().trim();
+					String res = inProcessString.toString();
 					inProcessString = new StringBuilder();
 					if (!wasInQuote && res.equalsIgnoreCase("or"))
 					{
@@ -208,8 +209,28 @@ public class CardSearchResultActivity extends FragmentActivity {
 						continue;
 					}
 					if (failed) return false;
-					if (!text.contains(res))
-						failed = true;
+					// query test
+					if (res.startsWith("스킬:"))
+					{
+						if (!card.getSkillName().contains(res) &&
+								!card.getSubSkillName().contains(res))
+							failed = true;
+					}
+					else if (res.startsWith("일러:"))
+					{
+						if (!card.getIllustrator().contains(res))
+							failed = true;
+					}
+					else if (res.startsWith("본문:"))
+					{
+						if (!card.getDescription().contains(res))
+							failed = true;
+					}
+					else // 이름 검색
+					{
+						if (!text.contains(res))
+							failed = true;
+					}
 				}
 				else inProcessString.append(c);
 			}
