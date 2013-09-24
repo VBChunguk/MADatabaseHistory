@@ -19,7 +19,6 @@ import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
 
@@ -28,21 +27,15 @@ public class DatabaseFileManager {
 	public static class DialogModifier {
 		
 		protected ProgressDialogFragment mDialog;
-		protected Handler mHandler;
 		protected FragmentActivity mActivity;
 		
 		public DialogModifier(ProgressDialogFragment d, FragmentActivity activity) {
 			mDialog = d;
-			mHandler = new Handler();
 			mActivity = activity;
 		}
 		
-		public Handler getHandler() {
-			return mHandler;
-		}
-		
 		public void setTitle(final int resid) {
-			mHandler.post(new Runnable() {
+			mActivity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -52,7 +45,7 @@ public class DatabaseFileManager {
 			});
 		}
 		public void setTitle(final String title) {
-			mHandler.post(new Runnable() {
+			mActivity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -62,7 +55,7 @@ public class DatabaseFileManager {
 			});
 		}
 		public void setMessage(final int resid) {
-			mHandler.post(new Runnable() {
+			mActivity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -72,7 +65,7 @@ public class DatabaseFileManager {
 			});
 		}
 		public void setMessage(final String message) {
-			mHandler.post(new Runnable() {
+			mActivity.runOnUiThread(new Runnable() {
 
 				@Override
 				public void run() {
@@ -104,12 +97,11 @@ public class DatabaseFileManager {
 			Bundle args = new Bundle();
 			df.setArguments(args);
 			final DialogModifier modifier = new DialogModifier(df, activity);
-			final Handler handler = modifier.getHandler();
 			Thread thread = new Thread(new Runnable() {
 				@Override
 				public void run() {
 					mObject = new DatabaseFileManager(activity.getFilesDir(), modifier);
-					handler.post(new Runnable() {
+					activity.runOnUiThread(new Runnable() {
 
 						@Override
 						public void run() {

@@ -10,7 +10,6 @@ import com.zotca.vbc.dbhistory.core.DatabaseDelta;
 import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.app.SearchManager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -141,7 +140,6 @@ public class CardSearchResultActivity extends FragmentActivity {
 		search();
 	}
 	private void search() {
-		final Handler handler = new Handler();
 		final Context ctx = this;
 		this.setTitle(query);
 		new Thread(new Runnable() {
@@ -168,7 +166,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 					}
 				}
 				
-				handler.post(new Runnable() {
+				runOnUiThread(new Runnable() {
 
 					@Override
 					public void run() {
