@@ -311,9 +311,12 @@ public class CardSearchResultActivity extends FragmentActivity {
 	
 	private static boolean matchesAdvancedQuery(Card card, String query) {
 		boolean inQuotes = false;
+		boolean inBracket = false;
+		boolean isNotApplied = false;
 		boolean failed = false, passNext = false;
 		StringBuilder inProcessString = new StringBuilder();
 		boolean wasInQuote = false;
+		boolean wasInBracket = false;
 		for (char c : query.toCharArray())
 		{
 			if (c == '"')
@@ -322,7 +325,23 @@ public class CardSearchResultActivity extends FragmentActivity {
 				inQuotes = !inQuotes;
 				continue;
 			}
-			if (inQuotes) inProcessString.append(c);
+			else if (c == '!')
+			{
+				isNotApplied = true;
+				continue;
+			}
+			else if (c == '(' && inProcessString.toString().equals(""))
+			{
+				inBracket = true;
+				continue;
+			}
+			else if (c == ')')
+			{
+				inBracket = false;
+				wasInBracket = true;
+				continue;
+			}
+			if (inQuotes || inBracket) inProcessString.append(c);
 			else
 			{
 				if (c == ' ')
@@ -341,23 +360,42 @@ public class CardSearchResultActivity extends FragmentActivity {
 						continue;
 					}
 					if (failed) return false;
-					if (!matchesSimpleQuery(card, res))
-						failed = true;
+					if (wasInBracket)
+					{
+						if (!matchesAdvancedQuery(card, res)) failed = true;
+					}
+					else
+					{
+						if (!matchesSimpleQuery(card, res))
+							failed = true;
+					}
+					failed ^= isNotApplied;
+					isNotApplied = false;
 				}
 				else inProcessString.append(c);
 			}
 			wasInQuote = false;
+			wasInBracket = false;
 		}
-		String res = inProcessString.toString().trim();
+		String res = inProcessString.toString();
 		if (!wasInQuote && (res.equalsIgnoreCase("or") || res.equals("또는")))
 		{
 		}
 		else
 		{
-			if (passNext) return true;
+			if (passNext) return !failed;
 			if (failed) return false;
-			if (!matchesSimpleQuery(card, res))
-				failed = true;
+			if (wasInBracket)
+			{
+				if (!matchesAdvancedQuery(card, res)) failed = true;
+			}
+			else
+			{
+				if (!matchesSimpleQuery(card, res))
+					failed = true;
+			}
+			failed ^= isNotApplied;
+			isNotApplied = false;
 		}
 		return !failed;
 	}
