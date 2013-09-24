@@ -52,13 +52,16 @@ public class CardSearchResultActivity extends FragmentActivity {
 			
 		});
 		
+		if (savedInstanceState != null)
+			query = savedInstanceState.getString(SearchManager.QUERY);
 		mFileManager = DatabaseFileManager.getManager(this,
 				new DatabaseFileManager.PostProcessHandler() {
 			
 			@Override
 			public void onPostProcess(DatabaseFileManager manager) {
 				mFileManager = manager;
-				handleIntent(getIntent());
+				if (query != null) search();
+				else handleIntent(getIntent());
 			}
 		});
 	}
@@ -126,52 +129,64 @@ public class CardSearchResultActivity extends FragmentActivity {
 		handleIntent(intent);
 	}
 	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		if (query != null) outState.putString(SearchManager.QUERY, query);
+	}
+	
 	private String query;
+	private void search(String query) {
+		this.query = query;
+		search();
+	}
+	private void search() {
+		final Handler handler = new Handler();
+		final Context ctx = this;
+		this.setTitle(query);
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				final LinkedList<Long> chain = mFileManager.getChain();
+				final ArrayList<Card> queryResult = new ArrayList<Card>();
+				final HashSet<Integer> resultIds = new HashSet<Integer>();
+				for (long time : chain)
+				{
+					final DatabaseDelta delta = mFileManager.getDelta(time);
+					final Set<Integer> cards = delta.getCardIdSet();
+					for (int id : cards)
+					{
+						if (queryResult.contains(id)) continue;
+						
+						final Card card = delta.getCard(id);
+						if (matchesAdvancedQuery(card, query))
+						{
+							queryResult.add(card);
+							resultIds.add(id);
+						}
+					}
+				}
+				
+				handler.post(new Runnable() {
+
+					@Override
+					public void run() {
+						ListView listView = (ListView) findViewById(android.R.id.list);
+						SearchResultAdapter adapter = new SearchResultAdapter(ctx, queryResult);
+						listView.setAdapter(adapter);
+					}
+					
+				});
+			}
+		}).start();
+	}
 	private void handleIntent(final Intent intent) {
 		if (mFileManager == null) return;
 		
 		if (Intent.ACTION_SEARCH.equals(intent.getAction()))
 		{
-			final Handler handler = new Handler();
-			final Context ctx = this;
-			query = intent.getStringExtra(SearchManager.QUERY);
-			this.setTitle(query);
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					final LinkedList<Long> chain = mFileManager.getChain();
-					final ArrayList<Card> queryResult = new ArrayList<Card>();
-					final HashSet<Integer> resultIds = new HashSet<Integer>();
-					for (long time : chain)
-					{
-						final DatabaseDelta delta = mFileManager.getDelta(time);
-						final Set<Integer> cards = delta.getCardIdSet();
-						for (int id : cards)
-						{
-							if (queryResult.contains(id)) continue;
-							
-							final Card card = delta.getCard(id);
-							if (matchesAdvancedQuery(card, query))
-							{
-								queryResult.add(card);
-								resultIds.add(id);
-							}
-						}
-					}
-					
-					handler.post(new Runnable() {
-
-						@Override
-						public void run() {
-							ListView listView = (ListView) findViewById(android.R.id.list);
-							SearchResultAdapter adapter = new SearchResultAdapter(ctx, queryResult);
-							listView.setAdapter(adapter);
-						}
-						
-					});
-				}
-			}).start();
+			search(intent.getStringExtra(SearchManager.QUERY));
 		}
 	}
 	
