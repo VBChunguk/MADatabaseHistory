@@ -175,9 +175,128 @@ public class CardSearchResultActivity extends FragmentActivity {
 		}
 	}
 	
-	private static boolean matchesAdvancedQuery(Card card, String query)
-	{
-		final String text = card.getName();
+	private static final int COMPARE_EQUALS = 1 << 0;
+	private static final int COMPARE_LESS = 1 << 1;
+	private static final int COMPARE_GREATER = 1 << 2;
+	
+	private static boolean matchesSimpleQuery(Card card, String query) {
+		if (query.startsWith("스킬:"))
+		{
+			query = query.substring(3);
+			if (!(
+					card.getSkillName().contains(query) || 
+					card.getSubSkillName().contains(query)) )
+				return false;
+		}
+		else if (query.startsWith("일러:"))
+		{
+			query = query.substring(3);
+			if (!card.getIllustrator().contains(query))
+				return false;
+		}
+		else if (query.startsWith("본문:"))
+		{
+			query = query.substring(3);
+			if (!card.getDescription().contains(query))
+				return false;
+		}
+		else if (query.startsWith("진영:"))
+		{
+			query = query.substring(3);
+			int categoryInt = 0;
+			if (query.equals("검술")) categoryInt = Card.BLADE;
+			else if (query.equals("기교")) categoryInt = Card.TECHNIQUE;
+			else if (query.equals("마법")) categoryInt = Card.MAGIC;
+			else if (query.equals("요정")) categoryInt = Card.FAIRY;
+			if (categoryInt != 0)
+			{
+				if (card.getCategory() != categoryInt)
+					return false;
+			}
+		}
+		else if (query.startsWith("성별:"))
+		{
+			query = query.substring(3);
+			boolean isFemale = false;
+			boolean isAvailable = false;
+			if (query.equals("남"))
+			{
+				isAvailable = true;
+			}
+			else if (query.equals("여"))
+			{
+				isAvailable = true;
+				isFemale = true;
+			}
+			if (isAvailable)
+			{
+				if (card.isFemale() != isFemale)
+					return false;
+			}
+		}
+		else if(query.startsWith("레어도:"))
+		{
+			query = query.substring(4);
+			if (query.length() > 0)
+			{
+				int compareType = COMPARE_EQUALS;
+				char firstChar = query.charAt(0);
+				if (firstChar == '<')
+				{
+					compareType = COMPARE_LESS;
+					if (query.charAt(1) == '=')
+					{
+						compareType |= COMPARE_EQUALS;
+						query = query.substring(2);
+					}
+					else query = query.substring(1);
+				}
+				else if (firstChar == '>')
+				{
+					compareType = COMPARE_GREATER;
+					if (query.charAt(1) == '=')
+					{
+						compareType |= COMPARE_EQUALS;
+						query = query.substring(2);
+					}
+					else query = query.substring(1);
+				}
+				else if (firstChar == '!')
+				{
+					compareType = COMPARE_GREATER | COMPARE_LESS;
+					query = query.substring(1);
+				}
+				
+				final int rareLevel = Card.getRareLevelFromString(query);
+				if (rareLevel != -1)
+				{
+					final int cardRareLevel = card.getRareLevel();
+					boolean succeeded = false;
+					if ((compareType & COMPARE_EQUALS) != 0)
+					{
+						if (cardRareLevel == rareLevel) succeeded = true;
+					}
+					if ((compareType & COMPARE_LESS) != 0)
+					{
+						if (cardRareLevel < rareLevel) succeeded = true;
+					}
+					if ((compareType & COMPARE_GREATER) != 0)
+					{
+						if (cardRareLevel > rareLevel) succeeded = true;
+					}
+					if (!succeeded) return false;
+				}
+			}
+		}
+		else // 이름 검색
+		{
+			if (!card.getName().contains(query))
+				return false;
+		}
+		return true;
+	}
+	
+	private static boolean matchesAdvancedQuery(Card card, String query) {
 		boolean inQuotes = false;
 		boolean failed = false, passNext = false;
 		StringBuilder inProcessString = new StringBuilder();
@@ -197,7 +316,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 				{
 					String res = inProcessString.toString();
 					inProcessString = new StringBuilder();
-					if (!wasInQuote && res.equalsIgnoreCase("or"))
+					if (!wasInQuote && (res.equalsIgnoreCase("or") || res.equals("또는")))
 					{
 						if (!failed) passNext = true;
 						else failed = false;
@@ -209,42 +328,22 @@ public class CardSearchResultActivity extends FragmentActivity {
 						continue;
 					}
 					if (failed) return false;
-					// query test
-					if (res.startsWith("스킬:"))
-					{
-						if (!card.getSkillName().contains(res) &&
-								!card.getSubSkillName().contains(res))
-							failed = true;
-					}
-					else if (res.startsWith("일러:"))
-					{
-						if (!card.getIllustrator().contains(res))
-							failed = true;
-					}
-					else if (res.startsWith("본문:"))
-					{
-						if (!card.getDescription().contains(res))
-							failed = true;
-					}
-					else // 이름 검색
-					{
-						if (!text.contains(res))
-							failed = true;
-					}
+					if (!matchesSimpleQuery(card, res))
+						failed = true;
 				}
 				else inProcessString.append(c);
 			}
 			wasInQuote = false;
 		}
 		String res = inProcessString.toString().trim();
-		if (!wasInQuote && res.equalsIgnoreCase("or"))
+		if (!wasInQuote && (res.equalsIgnoreCase("or") || res.equals("또는")))
 		{
 		}
 		else
 		{
 			if (passNext) return true;
 			if (failed) return false;
-			if (!text.contains(res))
+			if (!matchesSimpleQuery(card, res))
 				failed = true;
 		}
 		return !failed;
