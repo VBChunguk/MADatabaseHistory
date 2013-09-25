@@ -16,9 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SearchView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.widget.SearchView;
 import android.support.v7.app.ActionBarActivity;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -75,28 +76,23 @@ public class CardSearchResultActivity extends ActionBarActivity {
 		}
 	}
 
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.search, menu);
 		
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-		{
-			SearchManager searchManager =
+		SearchManager searchManager =
 		           (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-		    SearchView searchView =
-		            (SearchView) menu.findItem(R.id.search).getActionView();
-		    searchView.setSearchableInfo(
-		            searchManager.getSearchableInfo(getComponentName()));
-		    searchView.setOnSearchClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					SearchView searchView = (SearchView) v;
-					searchView.setQuery(query, false);
-				}
-			});
-		}
+	    MenuItem searchMenuItem = menu.findItem(R.id.search);
+	    SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+	    searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+	    searchView.setOnSearchClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				SearchView searchView = (SearchView) v;
+				searchView.setQuery(query, false);
+			}
+		});
 		return true;
 	}
 	

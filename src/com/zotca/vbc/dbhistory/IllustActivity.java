@@ -77,7 +77,6 @@ public class IllustActivity extends ActionBarActivity {
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
 			}
 			
-			@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 			@Override
 			public void onPageScrollStateChanged(int state) {
 				switch (state)
@@ -85,9 +84,7 @@ public class IllustActivity extends ActionBarActivity {
 				case ViewPager.SCROLL_STATE_IDLE:
 					if (!settleFlag)
 					{
-						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-							getActionBar().show();
-						}
+						getSupportActionBar().show();
 						setControlsVisible(controlsView, true);
 					}
 					settleFlag = false;
@@ -134,13 +131,10 @@ public class IllustActivity extends ActionBarActivity {
 
 	Handler mHideHandler = new Handler();
 	Runnable mHideRunnable = new Runnable() {
-		@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 		@Override
 		public void run() {
 			final View controlsView = findViewById(R.id.pager_title_strip);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-				getActionBar().hide();
-			}
+			getSupportActionBar().hide();
 			setControlsVisible(controlsView, false);
 		}
 	};

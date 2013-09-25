@@ -5,7 +5,7 @@
     android:versionName="dev3" >
 
     <uses-sdk
-        android:minSdkVersion="7"
+        android:minSdkVersion="8"
         android:targetSdkVersion="18" />
 
     <application
@@ -17,7 +17,7 @@
             android:value=".CardSearchResultActivity" />
         
         <activity
-            android:name=".DatabaseActivity"
+            android:name="com.zotca.vbc.dbhistory.DatabaseActivity"
             android:label="@string/app_name" >
 
             <intent-filter>
@@ -27,34 +27,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AboutActivity"
+            android:name="com.zotca.vbc.dbhistory.AboutActivity"
             android:label="@string/title_activity_about"
-            android:parentActivityName=".DatabaseActivity" >
+            android:parentActivityName="com.zotca.vbc.dbhistory.DatabaseActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DatabaseActivity" />
+                android:value="com.zotca.vbc.dbhistory.DatabaseActivity" />
         </activity>
         <activity
-            android:name=".CardViewActivity"
+            android:name="com.zotca.vbc.dbhistory.CardViewActivity"
             android:label="@string/title_activity_card"
-            android:parentActivityName=".DatabaseActivity" >
+            android:parentActivityName="com.zotca.vbc.dbhistory.DatabaseActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DatabaseActivity" />
+                android:value="com.zotca.vbc.dbhistory.DatabaseActivity" />
         </activity>
         <activity
-            android:name=".IllustActivity"
+            android:name="com.zotca.vbc.dbhistory.IllustActivity"
             android:label="@string/title_activity_illust"
             android:theme="@style/FullscreenTheme" >
         </activity>
         <activity
-            android:name=".CardSearchResultActivity"
+            android:name="com.zotca.vbc.dbhistory.CardSearchResultActivity"
             android:label="@string/title_activity_card_search_result"
-            android:parentActivityName=".DatabaseActivity"
+            android:parentActivityName="com.zotca.vbc.dbhistory.DatabaseActivity"
             android:launchMode="singleTop" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".DatabaseActivity" />
+                android:value="com.zotca.vbc.dbhistory.DatabaseActivity" />
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
