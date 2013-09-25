@@ -193,7 +193,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 	private static final int COMPARE_GREATER = 1 << 2;
 	
 	private static boolean matchesSimpleQuery(Card card, String query) {
-		if (query.startsWith("스킬:"))
+		if (query.startsWith("스킬?"))
 		{
 			query = query.substring(3);
 			if (!(
@@ -201,19 +201,19 @@ public class CardSearchResultActivity extends FragmentActivity {
 					card.getSubSkillName().contains(query)) )
 				return false;
 		}
-		else if (query.startsWith("일러:"))
+		else if (query.startsWith("일러?"))
 		{
 			query = query.substring(3);
 			if (!card.getIllustrator().contains(query))
 				return false;
 		}
-		else if (query.startsWith("본문:"))
+		else if (query.startsWith("본문?"))
 		{
 			query = query.substring(3);
 			if (!card.getDescription().contains(query))
 				return false;
 		}
-		else if (query.startsWith("진영:"))
+		else if (query.startsWith("진영?"))
 		{
 			query = query.substring(3);
 			int categoryInt = 0;
@@ -227,7 +227,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 					return false;
 			}
 		}
-		else if (query.startsWith("성별:"))
+		else if (query.startsWith("성별?"))
 		{
 			query = query.substring(3);
 			boolean isFemale = false;
@@ -247,7 +247,7 @@ public class CardSearchResultActivity extends FragmentActivity {
 					return false;
 			}
 		}
-		else if(query.startsWith("레어도:"))
+		else if(query.startsWith("레어도?"))
 		{
 			query = query.substring(4);
 			if (query.length() > 0)
