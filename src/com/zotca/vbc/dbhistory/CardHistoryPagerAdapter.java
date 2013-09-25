@@ -56,6 +56,8 @@ public class CardHistoryPagerAdapter extends FragmentStatePagerAdapter {
 	}
 	
 	public String getPageCardName(int position) {
-		return mHistory.get(position).second.getName();
+		final Card card = mHistory.get(position).second;
+		final String genderStr = card.isFemale() ? "f" : "m";
+		return genderStr + card.getName();
 	}
 }

@@ -47,7 +47,15 @@ public class CardViewActivity extends FragmentActivity {
 					mViewPager.setCurrentItem(page, false);
 				else if (time != -1)
 					mViewPager.setCurrentItem(mPagerAdapter.getIndexOf(time), false);
-				setTitle(mPagerAdapter.getPageCardName(mViewPager.getCurrentItem()));
+				{
+					String title = mPagerAdapter.getPageCardName(mViewPager.getCurrentItem());
+					char code = title.charAt(0);
+					final String male = getResources().getString(R.string.history_male);
+					final String female = getResources().getString(R.string.history_female);
+					if (code == 'm') title = "[" + male + "] " + title.substring(1);
+					else if (code == 'f') title = "[" + female + "] " + title.substring(1);
+					setTitle(title);
+				}
 				mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
 					@Override
@@ -60,7 +68,13 @@ public class CardViewActivity extends FragmentActivity {
 
 					@Override
 					public void onPageSelected(int position) {
-						setTitle(mPagerAdapter.getPageCardName(position));
+						String title = mPagerAdapter.getPageCardName(position);
+						char code = title.charAt(0);
+						final String male = getResources().getString(R.string.history_male);
+						final String female = getResources().getString(R.string.history_female);
+						if (code == 'm') title = "[" + male + "] " + title.substring(1);
+						else if (code == 'f') title = "[" + female + "] " + title.substring(1);
+						setTitle(title);
 					}
 					
 				});

@@ -9,6 +9,8 @@
     <string name="delta_init">First run</string>
     <string name="history_illustrated">Illustrated by %s</string>
     <string name="history_skill">Skill</string>
-    <string name="search_hint">Card name</string>
+    <string name="history_male">M</string>
+    <string name="history_female">F</string>
+    <string name="search_hint">Search query</string>
 
 </resources>
