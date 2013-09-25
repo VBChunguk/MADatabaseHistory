@@ -36,6 +36,7 @@ public class CardDatabase implements Serializable {
 		
 		private static final String[] RARE_LEVEL_STR;
 		private static final String[] RARE_LEVEL_SIMPLE_STR;
+		private static final String[] RARE_LEVEL_KOREAN_STR;
 		
 		public static String getRareLevelString(int rareLevel)
 		{
@@ -61,6 +62,10 @@ public class CardDatabase implements Serializable {
 				proc = item.replace('+', 'P');
 				if (rareLevel.equalsIgnoreCase(item) || rareLevel.equalsIgnoreCase(proc))
 					return i+1;
+					
+				item = RARE_LEVEL_KOREAN_STR[i];
+				if (rareLevel.equalsIgnoreCase(item))
+					return i+1;
 			}
 			return -1;
 		}
@@ -70,6 +75,8 @@ public class CardDatabase implements Serializable {
 					"SUPER RARE", "SUPER RARE+", "MILLION RARE", "MILLION RARE+" };
 			RARE_LEVEL_SIMPLE_STR = new String[] { "N", "N+", "R", "R+",
 					"SR", "SR+", "MR", "MR+" };
+			RARE_LEVEL_KOREAN_STR = new String[] { "노멀", "노플", "레어", "레플",
+					"슈레", "슈레플", "밀레", "밀레플" };
 		}
 		
 		private String name;
