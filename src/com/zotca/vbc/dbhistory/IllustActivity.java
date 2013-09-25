@@ -5,32 +5,17 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MotionEvent;
 import android.view.View;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- * 
- * @see SystemUiHider
- */
-public class IllustActivity extends FragmentActivity {
+public class IllustActivity extends ActionBarActivity {
 	public static final String ARG_ID = "id";
 	public static final String ARG_ID_AROUSAL = "id_arousal";
 	
-	/**
-	 * Whether or not the system UI should be auto-hidden after
-	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-	 */
 	private static final boolean AUTO_HIDE = true;
-
-	/**
-	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-	 * user interaction before hiding the system UI.
-	 */
 	private static final int AUTO_HIDE_DELAY_MILLIS = 2000;
 
 	private int id, idArousal;
@@ -40,10 +25,6 @@ public class IllustActivity extends FragmentActivity {
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 	public void setControlsVisible(View controlsView, boolean visible) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-			// If the ViewPropertyAnimator API is available
-			// (Honeycomb MR2 and later), use it to animate the
-			// in-layout UI controls at the bottom of the
-			// screen.
 			if (mControlsHeight == 0) {
 				mControlsHeight = controlsView.getHeight();
 			}
@@ -141,11 +122,6 @@ public class IllustActivity extends FragmentActivity {
 		delayedHide(100);
 	}
 
-	/**
-	 * Touch listener to use for in-layout UI controls to delay hiding the
-	 * system UI. This is to prevent the jarring behavior of controls going away
-	 * while interacting with activity UI.
-	 */
 	View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -169,10 +145,6 @@ public class IllustActivity extends FragmentActivity {
 		}
 	};
 
-	/**
-	 * Schedules a call to hide() in [delay] milliseconds, canceling any
-	 * previously scheduled calls.
-	 */
 	private void delayedHide(int delayMillis) {
 		mHideHandler.removeCallbacks(mHideRunnable);
 		mHideHandler.postDelayed(mHideRunnable, delayMillis);

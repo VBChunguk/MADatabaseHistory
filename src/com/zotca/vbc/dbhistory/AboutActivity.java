@@ -2,15 +2,15 @@ package com.zotca.vbc.dbhistory;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.MenuItem;
 import android.view.View;
 import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 
-public class AboutActivity extends Activity {
+public class AboutActivity extends ActionBarActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -6,12 +6,12 @@ import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.view.MenuItem;
 
-public class CardViewActivity extends FragmentActivity {
+public class CardViewActivity extends ActionBarActivity {
 
 	public static final String ARG_ID = "id";
 	public static final String ARG_PAGE = "defaultPage";
