@@ -109,14 +109,16 @@ public class CardSearchResultActivity extends ActionBarActivity {
 			//
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
-		case R.id.search:
-			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB)
-				startSearch(query, false, null, false);
-			return true;
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public boolean onSearchRequested() {
+		startSearch(query, true, null, false);
+		return false;
+	}
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);

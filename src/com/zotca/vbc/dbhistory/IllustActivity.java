@@ -40,7 +40,7 @@ public class IllustActivity extends ActionBarActivity {
 			// If the ViewPropertyAnimator APIs aren't
 			// available, simply show or hide the in-layout UI
 			// controls.
-			controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+			controlsView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
 		}
 		if (visible) delayedHide(AUTO_HIDE_DELAY_MILLIS);
 	}
