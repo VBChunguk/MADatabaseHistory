@@ -15,6 +15,7 @@
     <string name="share">Share</string>
     <string name="share_with">Share this illust to…</string>
     <string name="share_prepare">Preparing illust for sharing…</string>
+    <string name="share_failed">Failed to share.</string>
     <string name="save_illust">Save illust</string>
     <string name="save_succeed">Saved successfully.</string>
     <string name="save_failed">Failed to save illust.</string>

@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 public class ShareIllustProcessor extends AsyncTask<Object, Void, Uri> {
 
@@ -71,6 +72,11 @@ public class ShareIllustProcessor extends AsyncTask<Object, Void, Uri> {
 			mDialog.dismissAllowingStateLoss();
 			mActivity.startActivity(Intent.createChooser(intent,
 					mActivity.getResources().getString(R.string.share_with)));
+		}
+		else
+		{
+			mDialog.dismissAllowingStateLoss();
+			Toast.makeText(mActivity, R.string.share_failed, Toast.LENGTH_SHORT).show();
 		}
 	}
 }
