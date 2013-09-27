@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">MA Database History</string>
+    <string name="app_version">dev3</string>
     <string name="icon_description">Card Icon</string>
     <string name="delta_modified">Modified</string>
     <string name="delta_added">New card</string>

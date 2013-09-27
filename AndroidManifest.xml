@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zotca.vbc.dbhistory"
     android:versionCode="3"
-    android:versionName="dev3" >
+    android:versionName="@string/app_version" >
 
     <uses-sdk
         android:minSdkVersion="8"
