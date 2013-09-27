@@ -14,5 +14,8 @@
     <string name="share">공유</string>
     <string name="share_with">공유할 애플리케이션을 선택하세요</string>
     <string name="share_prepare">공유를 위해 일러스트 준비 중…</string>
+    <string name="save_illust">일러스트 저장</string>
+    <string name="save_succeed">성공적으로 저장했습니다.</string>
+    <string name="save_failed">일러스트 저장에 실패했습니다.</string>
     
 </resources>

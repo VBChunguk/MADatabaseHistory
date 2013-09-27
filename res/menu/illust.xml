@@ -4,7 +4,11 @@
     <item android:id="@+id/share"
         android:title="@string/share"
         android:icon="@android:drawable/ic_menu_share"
-        app:showAsAction="ifRoom|collapseActionView"></item>
+        app:showAsAction="ifRoom|collapseActionView" />
+    <item android:id="@+id/save"
+        android:title="@string/save_illust"
+        android:icon="@android:drawable/ic_menu_save"
+        app:showAsAction="ifRoom|collapseActionView" />
     
 
 </menu>

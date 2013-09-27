@@ -1,6 +1,9 @@
 package com.zotca.vbc.dbhistory;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
@@ -10,10 +13,14 @@ import com.zotca.vbc.dbhistory.bitmap.ShareIllustProcessor;
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.PagerAdapter;
@@ -25,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 public class IllustActivity extends ActionBarActivity {
 	public static final String ARG_CARD = "card";
@@ -168,20 +176,8 @@ public class IllustActivity extends ActionBarActivity {
 			boolean isArousal = false;
 			if (page % 2 == 1) isArousal = true;
 			if (page >= 2) isHoro = true;
-			int id = isArousal ? idArousal : this.id;
-			String fileName = String.format(Locale.getDefault(),
-					"thumbnail_chara_%d%s", id, isHoro ? "_horo" : "");
-			String urlName;
-			try {
-				urlName = new URL(IllustFragment.cardUrl, String.format(Locale.getDefault(),
-						"card_full%s%s/full_%s", isHoro?"_h":"", id>5000?"_max":"", fileName)
-						).toString();
-			} catch (MalformedURLException e) {
-				return true;
-			}
-			String filePath = new File(IllustFragment.cardDir, fileName).getAbsolutePath();
-			Bitmap bitmap = customCache.get(urlName);
-			if (bitmap == null) bitmap = MemoryBitmapCache.getCache().get(filePath);
+			
+			final Bitmap bitmap = getCurrentIllust();
 			if (bitmap != null)
 			{
 				String title = String.format(Locale.getDefault(), "[%s] %s",
@@ -190,9 +186,84 @@ public class IllustActivity extends ActionBarActivity {
 						isHoro?"홀로그램":"노멀", isArousal?"각성":"일반");
 				new ShareIllustProcessor(this).execute(bitmap, title, desc);
 			}
+			return true;
+		}
+		case R.id.save:
+		{
+			final Bitmap bitmap = getCurrentIllust();
+			File basePath = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+			
+			int page = contentView.getCurrentItem();
+			boolean isHoro = false;
+			boolean isArousal = false;
+			if (page % 2 == 1) isArousal = true;
+			if (page >= 2) isHoro = true;
+			int id = isArousal ? idArousal : this.id;
+			String fileName = String.format(Locale.getDefault(),
+					"thumbnail_chara_%d%s.png", id, isHoro ? "_horo" : "");
+			File filePath = new File(basePath, fileName);
+			
+			class FileSaveTask extends AsyncTask<Object, Void, Boolean> {
+
+				private final Context mCtx;
+				public FileSaveTask(Context ctx) {
+					mCtx = ctx;
+				}
+				
+				@Override
+				protected Boolean doInBackground(Object... params) {
+					final Bitmap bitmap = (Bitmap) params[0];
+					final File filePath = (File) params[1];
+					try {
+						FileOutputStream fos = new FileOutputStream(filePath);
+						bitmap.compress(CompressFormat.PNG, 9, fos);
+						fos.close();
+						return true;
+					} catch (FileNotFoundException e) {
+					} catch (IOException e) {
+					}
+					return false;
+				}
+				
+				@Override
+				protected void onPostExecute(Boolean result) {
+					if (isCancelled()) result = false;
+					
+					if (result)
+						Toast.makeText(mCtx, R.string.save_succeed, Toast.LENGTH_SHORT).show();
+					else
+						Toast.makeText(mCtx, R.string.save_failed, Toast.LENGTH_SHORT).show();
+				}
+			}
+			
+			new FileSaveTask(this).execute(bitmap, filePath);
+			return true;
 		}
 		}
 		return false;
+	}
+	
+	private Bitmap getCurrentIllust() {
+		int page = contentView.getCurrentItem();
+		boolean isHoro = false;
+		boolean isArousal = false;
+		if (page % 2 == 1) isArousal = true;
+		if (page >= 2) isHoro = true;
+		int id = isArousal ? idArousal : this.id;
+		String fileName = String.format(Locale.getDefault(),
+				"thumbnail_chara_%d%s", id, isHoro ? "_horo" : "");
+		String urlName = null;
+		try {
+			urlName = new URL(IllustFragment.cardUrl, String.format(Locale.getDefault(),
+					"card_full%s%s/full_%s", isHoro?"_h":"", id>5000?"_max":"", fileName)
+					).toString();
+		} catch (MalformedURLException e) {
+		}
+		String filePath = new File(IllustFragment.cardDir, fileName).getAbsolutePath();
+		Bitmap bitmap = null;
+		if (urlName != null) bitmap = customCache.get(urlName);
+		if (bitmap == null) bitmap = MemoryBitmapCache.getCache().get(filePath);
+		return bitmap;
 	}
 	
 	public boolean isConnectedToInternet() {
