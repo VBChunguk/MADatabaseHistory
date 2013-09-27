@@ -1,5 +1,6 @@
 package com.zotca.vbc.dbhistory;
 
+import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 
 import android.content.Intent;
@@ -7,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
 import android.view.MenuItem;
 
 public class CardViewActivity extends ActionBarActivity {
@@ -17,6 +19,7 @@ public class CardViewActivity extends ActionBarActivity {
 	private int mId;
 	private ViewPager mViewPager;
 	private CardHistoryPagerAdapter mPagerAdapter;
+	private DatabaseFileManager mManager;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,11 +35,12 @@ public class CardViewActivity extends ActionBarActivity {
 		if (savedInstanceState != null) page = savedInstanceState.getInt(ARG_PAGE, -1);
 		else page = -1;
 		final long time = args.getLongExtra(ARG_PAGE, -1);
-		DatabaseFileManager.getManager(this,
+		mManager = DatabaseFileManager.getManager(this,
 				new DatabaseFileManager.PostProcessHandler() {
 			
 			@Override
 			public void onPostProcess(DatabaseFileManager manager) {
+				mManager = manager;
 				mPagerAdapter = new CardHistoryPagerAdapter(
 						getSupportFragmentManager(), manager, mId);
 				mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -87,6 +91,12 @@ public class CardViewActivity extends ActionBarActivity {
 		outState.putInt(ARG_PAGE, mViewPager.getCurrentItem());
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.history, menu);
+		return true;
+	}
+	
 	private void setupActionBar() {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}
@@ -94,6 +104,50 @@ public class CardViewActivity extends ActionBarActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		case R.id.share:
+		{
+			StringBuilder builder = new StringBuilder();
+			Card card = mManager.getCard(mId).get(mViewPager.getCurrentItem()).second;
+			final String categoryStr;
+			switch (card.getCategory())
+			{
+			case Card.BLADE:
+				categoryStr = "검술";
+				break;
+			case Card.TECHNIQUE:
+				categoryStr = "기교";
+				break;
+			case Card.MAGIC:
+				categoryStr = "마법";
+				break;
+			case Card.FAIRY:
+				categoryStr = "요정";
+				break;
+			default:
+				categoryStr = "";
+				break;
+			}
+			final String subSkillName =
+					card.getSubSkillName()=="0"?"":" ("+card.getSubSkillName()+")";
+			String skillDesc = card.getSkillDescription();
+			if (skillDesc.length() <= 0) skillDesc = "";
+			else skillDesc = "\n" + skillDesc;
+			
+			builder
+			.append('[').append(categoryStr).append(' ')
+			.append(Card.getRareLevelString(card.getRareLevel(), true)).append("] ")
+			.append(card.getName()).append("\nCost: ").append(card.getCost())
+			.append("\nIllustrated by ").append(card.getIllustrator()).append("\n\n[스킬]\n")
+			.append(card.getSkillName()).append(subSkillName).append(skillDesc).append("\n\n")
+			.append(card.getDescription());
+			
+			Intent intent = new Intent(Intent.ACTION_SEND);
+			intent.putExtra(Intent.EXTRA_TEXT, builder.toString());
+			intent.setType("text/plain");
+			startActivity(Intent.createChooser(
+					intent, getResources().getString(R.string.share_with)));
+		}
+			return true;
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this
 			// activity, the Up button is shown. Use NavUtils to allow users
