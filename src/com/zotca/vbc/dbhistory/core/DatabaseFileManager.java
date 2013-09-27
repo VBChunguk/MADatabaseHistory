@@ -141,6 +141,12 @@ public class DatabaseFileManager {
 		try {
 			ois = new ObjectInputStream(new FileInputStream(head));
 			pHeadDelta = ois.readLong();
+			if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED))
+			{
+				ois.close();
+				generateChain(f, pHeadDelta);
+				return;
+			}
 			if (pHeadDelta != db.lastModified())
 			{
 				mHead = (CardDatabase) ois.readObject();
