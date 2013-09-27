@@ -15,9 +15,12 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -54,7 +57,6 @@ public class IllustActivity extends ActionBarActivity {
 			// controls.
 			controlsView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
 		}
-		if (visible) delayedHide(AUTO_HIDE_DELAY_MILLIS);
 	}
 	
 	private MemoryBitmapCache customCache;
@@ -63,6 +65,8 @@ public class IllustActivity extends ActionBarActivity {
 	}
 	
 	private ViewPager contentView;
+	private GestureDetectorCompat gestureDetector;
+	private boolean controlsVisible;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,49 +90,50 @@ public class IllustActivity extends ActionBarActivity {
 		
 		final View controlsView = findViewById(R.id.pager_title_strip);
 		contentView = (ViewPager) findViewById(R.id.pager);
-
-		contentView.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-			
-			boolean settleFlag;
-			
-			@Override
-			public void onPageSelected(int position) {
-			}
-			
-			@Override
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-			}
-			
-			@Override
-			public void onPageScrollStateChanged(int state) {
-				switch (state)
-				{
-				case ViewPager.SCROLL_STATE_IDLE:
-					if (!settleFlag)
-					{
+		gestureDetector = new GestureDetectorCompat(
+				this, new GestureDetector.SimpleOnGestureListener() {
+					
+					@Override
+					public boolean onDown(MotionEvent e) {
+						Log.d("", "onDown");
+						return true;
+					}
+					
+					@Override
+					public boolean onSingleTapUp(MotionEvent e) {
+						Log.d("", "onSigleTapUp");
 						getSupportActionBar().show();
 						setControlsVisible(controlsView, true);
+						delayedHide(AUTO_HIDE_DELAY_MILLIS);
+						return true;
 					}
-					settleFlag = false;
-					break;
-				case ViewPager.SCROLL_STATE_DRAGGING:
-					setControlsVisible(controlsView, true);
-					break;
-				case ViewPager.SCROLL_STATE_SETTLING:
-					settleFlag = true;
-					break;
-				}
-			}
+					
+					@Override
+					public boolean onScroll(MotionEvent e1, MotionEvent e2,
+							float distanceX, float distanceY) {
+						if (!controlsVisible) setControlsVisible(controlsView, true);
+						controlsVisible = true;
+						return true;
+					}
 		});
 
-		// Upon interacting with UI controls, delay any scheduled hide()
-		// operations to prevent the jarring behavior of controls going away
-		// while interacting with the UI.
-		findViewById(R.id.pager_title_strip).setOnTouchListener(
-				mDelayHideTouchListener);
+		contentView.setOnTouchListener(new View.OnTouchListener() {
+			
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getActionMasked() == MotionEvent.ACTION_UP)
+				{
+					controlsVisible = false;
+					delayedHide(AUTO_HIDE_DELAY_MILLIS);
+				}
+				gestureDetector.onTouchEvent(event);
+				return false;
+			}
+		});
 		
 		PagerAdapter adapter = new IllustPagerAdapter(getSupportFragmentManager(), id, idArousal);
 		contentView.setAdapter(adapter);
+		
 	}
 
 	@Override
@@ -140,7 +145,7 @@ public class IllustActivity extends ActionBarActivity {
 		// are available.
 		delayedHide(100);
 	}
-
+	
 	private static final String PREF_CONNECT = "internet_connect";
 	private boolean mConnectInternet;
 	@Override
@@ -181,8 +186,8 @@ public class IllustActivity extends ActionBarActivity {
 			{
 				String title = String.format(Locale.getDefault(), "[%s] %s",
 						Card.getRareLevelString(card.getRareLevel(), true), card.getName());
-				String desc = String.format(Locale.getDefault(), "%s - %s %s",
-						card.getName(), isHoro?"홀로그램":"노멀", isArousal?"각성":"일반");
+				String desc = String.format(Locale.getDefault(), "종류: %s %s",
+						isHoro?"홀로그램":"노멀", isArousal?"각성":"일반");
 				new ShareIllustProcessor(this).execute(bitmap, title, desc);
 			}
 		}

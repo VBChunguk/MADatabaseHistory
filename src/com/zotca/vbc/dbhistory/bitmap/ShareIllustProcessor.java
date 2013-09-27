@@ -66,6 +66,7 @@ public class ShareIllustProcessor extends AsyncTask<Object, Void, Uri> {
 		{
 			Intent intent = new Intent(Intent.ACTION_SEND);
 			intent.putExtra(Intent.EXTRA_STREAM, result);
+			intent.putExtra(Intent.EXTRA_TEXT, title + "\n" + desc);
 			intent.setType("image/png");
 			mDialog.dismissAllowingStateLoss();
 			mActivity.startActivity(Intent.createChooser(intent,
