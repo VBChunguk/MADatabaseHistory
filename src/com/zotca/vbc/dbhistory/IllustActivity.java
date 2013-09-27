@@ -191,7 +191,10 @@ public class IllustActivity extends ActionBarActivity {
 		case R.id.save:
 		{
 			final Bitmap bitmap = getCurrentIllust();
-			File basePath = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+			File basePath = new File(
+					Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+					"ArthurCards/");
+			basePath.mkdir();
 			
 			int page = contentView.getCurrentItem();
 			boolean isHoro = false;
@@ -228,7 +231,6 @@ public class IllustActivity extends ActionBarActivity {
 				@Override
 				protected void onPostExecute(Boolean result) {
 					if (isCancelled()) result = false;
-					
 					if (result)
 						Toast.makeText(mCtx, R.string.save_succeed, Toast.LENGTH_SHORT).show();
 					else
