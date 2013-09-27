@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">MA Database History</string>
+    <string name="app_name">MA Card Info</string>
     <string name="app_version">dev3</string>
     <string name="icon_description">Card Icon</string>
     <string name="delta_modified">Modified</string>
