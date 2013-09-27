@@ -1,24 +1,36 @@
 package com.zotca.vbc.dbhistory;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Locale;
+
+import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
+import com.zotca.vbc.dbhistory.bitmap.ShareIllustProcessor;
+import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
+
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
 public class IllustActivity extends ActionBarActivity {
-	public static final String ARG_ID = "id";
-	public static final String ARG_ID_AROUSAL = "id_arousal";
+	public static final String ARG_CARD = "card";
 	
 	private static final boolean AUTO_HIDE = true;
 	private static final int AUTO_HIDE_DELAY_MILLIS = 2000;
 
 	private int id, idArousal;
+	private Card card;
 	
 	int mControlsHeight;
 	int mShortAnimTime;
@@ -45,25 +57,35 @@ public class IllustActivity extends ActionBarActivity {
 		if (visible) delayedHide(AUTO_HIDE_DELAY_MILLIS);
 	}
 	
+	private MemoryBitmapCache customCache;
+	public MemoryBitmapCache getIllustCache() {
+		return customCache;
+	}
+	
+	private ViewPager contentView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if (savedInstanceState != null)
 		{
-			id = savedInstanceState.getInt(ARG_ID);
-			idArousal = savedInstanceState.getInt(ARG_ID_AROUSAL);
+			card = (Card) savedInstanceState.getSerializable(ARG_CARD);
+			id = card.getNormalIllustId();
+			idArousal = card.getArousalIllustId();
 		}
 		else
 		{
 			Intent args = this.getIntent();
-			id = args.getIntExtra(ARG_ID, 0);
-			idArousal = args.getIntExtra(ARG_ID_AROUSAL, 0);
+			card = (Card) args.getSerializableExtra(ARG_CARD);
+			id = card.getNormalIllustId();
+			idArousal = card.getArousalIllustId();
 		}
 
 		setContentView(R.layout.activity_illust);
 		
+		customCache = new MemoryBitmapCache(10 * 1024); // 10MB
+		
 		final View controlsView = findViewById(R.id.pager_title_strip);
-		final ViewPager contentView = (ViewPager) findViewById(R.id.pager);
+		contentView = (ViewPager) findViewById(R.id.pager);
 
 		contentView.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			
@@ -119,6 +141,59 @@ public class IllustActivity extends ActionBarActivity {
 		delayedHide(100);
 	}
 
+	private static final String PREF_CONNECT = "internet_connect";
+	private boolean mConnectInternet;
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.illust, menu);
+		
+		mConnectInternet = getPreferences(MODE_PRIVATE).getBoolean(PREF_CONNECT, true);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int itemId = item.getItemId();
+		switch (itemId)
+		{
+		case R.id.share:
+		{
+			int page = contentView.getCurrentItem();
+			boolean isHoro = false;
+			boolean isArousal = false;
+			if (page % 2 == 1) isArousal = true;
+			if (page >= 2) isHoro = true;
+			int id = isArousal ? idArousal : this.id;
+			String fileName = String.format(Locale.getDefault(),
+					"thumbnail_chara_%d%s", id, isHoro ? "_horo" : "");
+			String urlName;
+			try {
+				urlName = new URL(IllustFragment.cardUrl, String.format(Locale.getDefault(),
+						"card_full%s%s/full_%s", isHoro?"_h":"", id>5000?"_max":"", fileName)
+						).toString();
+			} catch (MalformedURLException e) {
+				return true;
+			}
+			String filePath = new File(IllustFragment.cardDir, fileName).getAbsolutePath();
+			Bitmap bitmap = customCache.get(urlName);
+			if (bitmap == null) bitmap = MemoryBitmapCache.getCache().get(filePath);
+			if (bitmap != null)
+			{
+				String title = String.format(Locale.getDefault(), "[%s] %s",
+						Card.getRareLevelString(card.getRareLevel(), true), card.getName());
+				String desc = String.format(Locale.getDefault(), "%s - %s %s",
+						card.getName(), isHoro?"홀로그램":"노멀", isArousal?"각성":"일반");
+				new ShareIllustProcessor(this).execute(bitmap, title, desc);
+			}
+		}
+		}
+		return false;
+	}
+	
+	public boolean isConnectedToInternet() {
+		return mConnectInternet;
+	}
+	
 	View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -147,7 +222,6 @@ public class IllustActivity extends ActionBarActivity {
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		outState.putInt(ARG_ID, id);
-		outState.putInt(ARG_ID_AROUSAL, idArousal);
+		outState.putSerializable(ARG_CARD, card);
 	}
 }

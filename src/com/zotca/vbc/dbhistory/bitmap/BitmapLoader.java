@@ -57,6 +57,12 @@ public class BitmapLoader extends AsyncTask<String, Void, Bitmap> {
 	
 	public static void loadBitmap(Resources res, String path, ImageView view)
 	{
+		Bitmap placeholder = Bitmap.createBitmap(1, 1, Config.ARGB_8888);
+		placeholder.setPixel(0, 0, Color.GRAY);
+		loadBitmap(res, path, placeholder, view);
+	}
+	public static void loadBitmap(Resources res, String path, Bitmap placeholder, ImageView view)
+	{
 		if (cancelPotentialWork(path, view))
 		{
 			final MemoryBitmapCache cache = MemoryBitmapCache.getCache();
@@ -68,8 +74,6 @@ public class BitmapLoader extends AsyncTask<String, Void, Bitmap> {
 			else
 			{
 				final BitmapLoader bitmapLoader = new BitmapLoader(view);
-				Bitmap placeholder = Bitmap.createBitmap(1, 1, Config.ARGB_8888);
-				placeholder.setPixel(0, 0, Color.GRAY);
 				final AsyncBitmapDrawable asyncDrawable = 
 						new AsyncBitmapDrawable(res, placeholder, bitmapLoader);
 				view.setImageDrawable(asyncDrawable);

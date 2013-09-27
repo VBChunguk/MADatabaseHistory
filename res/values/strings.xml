@@ -12,5 +12,8 @@
     <string name="history_male">M</string>
     <string name="history_female">F</string>
     <string name="search_hint">Search query</string>
+    <string name="share">Share</string>
+    <string name="share_with">Share this illust to…</string>
+    <string name="share_prepare">Preparing illust for sharing…</string>
 
 </resources>

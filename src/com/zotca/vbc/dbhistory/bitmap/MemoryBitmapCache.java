@@ -23,6 +23,9 @@ public class MemoryBitmapCache extends LruCache<String, Bitmap> {
 	public MemoryBitmapCache() {
 		super((int) (Runtime.getRuntime().maxMemory() / 1024 / 10)); // 1/10th of max memory
 	}
+	public MemoryBitmapCache(int usageInKilobytes) {
+		super(usageInKilobytes);
+	}
 
 	@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 	@Override

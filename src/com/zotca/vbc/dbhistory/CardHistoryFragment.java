@@ -62,8 +62,7 @@ public class CardHistoryFragment extends Fragment {
 			@Override
 			public void onClick(View v) {
 				Intent args = new Intent(ctx, IllustActivity.class);
-				args.putExtra(IllustActivity.ARG_ID, card.getId());
-				args.putExtra(IllustActivity.ARG_ID_AROUSAL, card.getArousalIllustId());
+				args.putExtra(IllustActivity.ARG_CARD, card);
 				startActivity(args);
 			}
 			

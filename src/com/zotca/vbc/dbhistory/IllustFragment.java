@@ -1,10 +1,22 @@
 package com.zotca.vbc.dbhistory;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.Locale;
 
 import com.zotca.vbc.dbhistory.bitmap.BitmapLoader;
+import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
+import com.zotca.vbc.dbhistory.net.HttpDownloader;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.Fragment;
@@ -16,13 +28,37 @@ import android.widget.ImageView;
 
 public class IllustFragment extends Fragment {
 
-	private static File cardDir;
+	public static File cardDir;
+	public static URL cardUrl;
 	
 	static
 	{
 		File extstorage = Environment.getExternalStorageDirectory();
 		cardDir = new File(extstorage,
 				"Android/data/com.square_enix.million_kr/files/save/download/image/card/");
+		
+		int version = 0;
+		try {
+			FileInputStream fis = new FileInputStream(new File(extstorage,
+					"Android/data/com.square_enix.million_kr/files/save/appdata/save_version"));
+			byte[] buf = new byte[4];
+			fis.read(buf);
+			fis.close();
+			version = ByteBuffer.wrap(buf).getInt();
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		}
+		if (version != 0)
+		{
+			try {
+				cardUrl = new URL(String.format(Locale.getDefault(),
+						"http://dn.actoz.hscdn.com/marthur/contents/%d/", version));
+			} catch (MalformedURLException e) {
+				cardUrl = null;
+			}
+		}
+		else
+			cardUrl = null;
 	}
 	
 	public static final String ARG_HORO = "is_horo";
@@ -40,7 +76,51 @@ public class IllustFragment extends Fragment {
 		String fileName = String.format(Locale.getDefault(),
 				"thumbnail_chara_%d%s", id, isHoro ? "_horo" : "");
 		File file = new File(cardDir, fileName);
-		BitmapLoader.loadBitmap(this.getResources(), file.getAbsolutePath(), view);
+		
+		String urlName = null;
+		if (cardUrl != null)
+		{
+			try {
+				urlName = new URL(cardUrl, String.format(Locale.getDefault(),
+						"card_full%s%s/full_%s", isHoro ? "_h" : "", id>5000 ? "_max" : "", fileName)
+						).toString();
+			} catch (MalformedURLException e) {
+			}
+		}
+		if (urlName != null)
+		{
+			final MemoryBitmapCache cache = ((IllustActivity) this.getActivity()).getIllustCache();
+			final Bitmap bitmapCached = cache.get(urlName);
+			if (bitmapCached != null)
+			{
+				view.setImageBitmap(bitmapCached);
+			}
+			else
+			{
+				BitmapLoader.loadBitmap(this.getResources(), file.getAbsolutePath(), view);
+				if (checkNetworkState(true))
+				{
+					new HttpDownloader(view, cache).execute(urlName);
+				}
+			}
+		}
+		else
+			BitmapLoader.loadBitmap(this.getResources(), file.getAbsolutePath(), view);
 		return view;
+	}
+	
+	private boolean checkNetworkState(boolean acceptMobileNetwork) {
+		final ConnectivityManager manager = (ConnectivityManager)
+				this.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+		final NetworkInfo netInfo = manager.getActiveNetworkInfo();
+		if (netInfo != null && netInfo.isConnected())
+		{
+			if (netInfo.getType() == ConnectivityManager.TYPE_MOBILE)
+			{
+				return acceptMobileNetwork;
+			}
+			else return true;
+		}
+		return false;
 	}
 }

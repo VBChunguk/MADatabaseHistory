@@ -32,11 +32,12 @@ public class ArthurDecodeStream extends InputStream {
 			if (read < 0) break;
 			bufstream.write(buf, 0, read);
 		}
+		stream.close();
 		byte[] alread = bufstream.toByteArray();
 		try {
 			mSource = new ByteArrayInputStream(mCipherAlgo.doFinal(alread));
 		} catch (Exception e) {
-			throw new IOException(e);
+			throw new IOException();
 		}
 	}
 	
