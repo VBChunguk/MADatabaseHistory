@@ -2,6 +2,7 @@ package com.zotca.vbc.dbhistory;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
@@ -93,10 +94,15 @@ public class SettingsActivity extends PreferenceActivity {
 
 		// Add 'general' preferences.
 		addPreferencesFromResource(R.xml.pref_general);
-		findPreference("pref_about").setSummary(
-				getResources().getString(
-						R.string.pref_description_about,
-						getResources().getString(android.R.attr.versionName)));
+		try {
+			String version = getPackageManager()
+					.getPackageInfo(getPackageName(), 0).versionName;
+			findPreference("pref_about").setSummary(
+					getResources().getString(
+							R.string.pref_description_about,
+							version));
+		} catch (NameNotFoundException e) {
+		}
 	}
 
 	/** {@inheritDoc} */
@@ -183,10 +189,15 @@ public class SettingsActivity extends PreferenceActivity {
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
 			addPreferencesFromResource(R.xml.pref_general);
-			findPreference("pref_about").setSummary(
-					getResources().getString(
-							R.string.pref_description_about,
-							getResources().getString(android.R.attr.versionName)));
+			try {
+				String version = getActivity().getPackageManager()
+						.getPackageInfo(getActivity().getPackageName(), 0).versionName;
+				findPreference("pref_about").setSummary(
+						getResources().getString(
+								R.string.pref_description_about,
+								version));
+			} catch (NameNotFoundException e) {
+			}
 		}
 	}
 }
