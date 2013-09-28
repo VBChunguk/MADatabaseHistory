@@ -49,7 +49,7 @@
         <activity
             android:name="com.zotca.vbc.dbhistory.IllustActivity"
             android:label="@string/title_activity_illust"
-            android:theme="@style/FullscreenTheme" >
+            android:theme="@style/FullscreenTheme" android:screenOrientation="portrait" android:configChanges="orientation">
         </activity>
         <activity
             android:name="com.zotca.vbc.dbhistory.CardSearchResultActivity"
