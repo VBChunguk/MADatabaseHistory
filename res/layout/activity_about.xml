@@ -52,12 +52,4 @@
         android:clickable="true"
         android:onClick="viewCoderTwitter" />
 
-    <Button
-        android:layout_marginTop="30dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="@string/about_info_bug"
-        android:onClick="viewBugReport" />
-
 </LinearLayout>

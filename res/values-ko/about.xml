@@ -3,6 +3,5 @@
     
     <string name="about_version">현재 버전</string>
     <string name="about_info_coding">분석, 프로그램</string>
-    <string name="about_info_bug">버그 보고하기</string>
     
 </resources>

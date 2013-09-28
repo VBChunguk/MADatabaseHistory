@@ -1,0 +1,27 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <PreferenceCategory
+        android:title="@string/pref_header_general"
+        android:key="pref_key_general" >
+        <CheckBoxPreference
+	        android:defaultValue="false"
+	        android:key="pref_onlywifi"
+	        android:summary="@string/pref_description_onlywifi"
+	        android:title="@string/pref_title_onlywifi" />
+
+	    <Preference
+	        android:title="@string/title_activity_about"
+	        android:key="pref_about" >
+	        <intent android:targetPackage="com.zotca.vbc.dbhistory"
+	            android:targetClass="com.zotca.vbc.dbhistory.AboutActivity" />
+	    </Preference>
+	    
+	    <Preference
+	        android:title="@string/pref_title_report"
+	        android:key="pref_report" >
+	        <intent android:action="android.intent.action.VIEW"
+	            android:data="https://github.com/VBChunguk/MADatabaseHistory/issues/" />
+	    </Preference>
+    </PreferenceCategory>
+    
+</PreferenceScreen>
