@@ -96,7 +96,7 @@ public class SettingsActivity extends PreferenceActivity {
 		findPreference("pref_about").setSummary(
 				getResources().getString(
 						R.string.pref_description_about,
-						getResources().getString(R.string.app_version)));
+						getResources().getString(android.R.attr.versionName)));
 	}
 
 	/** {@inheritDoc} */
@@ -186,7 +186,7 @@ public class SettingsActivity extends PreferenceActivity {
 			findPreference("pref_about").setSummary(
 					getResources().getString(
 							R.string.pref_description_about,
-							getResources().getString(R.string.app_version)));
+							getResources().getString(android.R.attr.versionName)));
 		}
 	}
 }

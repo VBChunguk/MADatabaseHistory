@@ -102,7 +102,7 @@ public class IllustFragment extends Fragment {
 				boolean onlyWifi = PreferenceManager
 						.getDefaultSharedPreferences(this.getActivity())
 						.getBoolean("pref_onlywifi", false);
-				if (checkNetworkState(!onlyWifi))
+				if (checkNetworkState(onlyWifi))
 				{
 					new HttpDownloader(view, cache).execute(urlName);
 				}
