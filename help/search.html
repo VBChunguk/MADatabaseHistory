@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<title>검색 도움말</title>
+<style type='text/css'>
+img
+{
+	width: 250pt;
+}
+.weak
+{
+	font-style: italic;
+	color: gray;
+}
+</style>
+</head>
+<body>
+
+<h1>검색 도움말</h1>
+<p>
+<strong>확밀아 카드정보 뷰어</strong>의 기능 중 하나인 검색 기능을 사용할 땐 여러 가지 <strong>검색 필터</strong>를 사용할 수 있습니다. 검색 필터는 카드의 이름뿐만 아니라 진영, 레어도 등의 정보를 비교하여 검색 결과를 만들어 냅니다.
+</p>
+
+<h2>검색해 보자</h2>
+<p>
+좌측 상단에 검색 버튼이 있는 경우 그것을 누르거나 디바이스의 검색 버튼(없는 경우 대개 메뉴 버튼을 길게 누르면 됨)을 누르면 검색 창이 나타납니다.<br>
+<img src='images/1.png' alt='메인 화면의 검색 버튼'> <img src='images/2.png' alt='검색 결과 화면의 검색 버튼'>
+</p>
+<h3>여러 가지 검색법</h3>
+<ul>
+<li>띄어쓰기로 구분된 구절들은 기본적으로 그 구절 모두의 조건을 만족하는 카드를 검색합니다.<br>
+예: '특이 춘향'은 카드 이름에 '특이'와 '춘향'을 모두 포함하고 있는 카드를 검색합니다.<br>
+<img src='images/5.png' alt='특이 춘향'></li>
+<li>큰따옴표로 둘러싸인 문자열은 그 안에 있는 띄어쓰기를 구절 구별의 단위로 보지 않고 구절을 이루는 요소로 생각됩니다.<br>
+예: '스피카 성관형'은 '성관형 스피카'를 검색하지만 '"스피카 성관형"'은 그것을 검색하지 않습니다.<br>
+<img src='images/6.png' alt='스피카 성관형'> <img src='images/7.png' alt='"스피카 성관형"'></li>
+<li>' or '(대소문자 구분 안 함) 또는 ' 또는 ' 으로 구절이 이어진 경우, 앞뒤 구절의 검색 결과를 합칩니다. 이를 '또는 연산자'라고 합니다.<br>
+예: '설화형 심청'은 '설화형'과 '심청'을 모두 포함한 카드를 검색하지만 '설화형 또는 심청'은 '설화형'의 검색 결과와 '심청'의 검색 결과를 합칩니다.<br>
+<img src='images/8.png' alt='설화형 심청' style='vertical-align: top;'> <img src='images/9.png' alt='설화형 또는 심청'></li>
+<li>소괄호로 묶인 여러 구절들은 또는 연산자와 연결될 때 한 구절로 생각됩니다.<br>
+예: '(이계형 소랑) 또는 (아베노 세이메이 특이형)'은 '이계형 소랑'의 검색 결과와 '아베노 세이메이 특이형'의 검색 결과를 합칩니다.<br>
+<img src='images/10.png' alt='(이계형 소랑) 또는 (아베노 세이메이 특이형)'></li>
+<li>느낌표('!')가 앞에 붙은 구절은 그 구절을 만족하지 <strong>않는</strong> 카드를 검색합니다.</li>
+</ul>
+<h3>여러 가지 검색 필터</h3>
+<ul>
+<li><strong>진영?<span class='weak'>진영이름</span></strong>: 진영이 <span class='weak'>진영이름</span>인 카드를 검색합니다.<br>
+<span class='weak'>진영이름</span>: 검술, 기교, 마법, 요정 중 하나</li>
+<li><strong>성별?<span class='weak'>성별</span></strong>: 성별이 <span class='weak'>성별</span>인 카드를 검색합니다.<br>
+<span class='weak'>성별</span>: 남, 여 중 하나</li>
+<li><strong>일러?<span class='weak'>일러스트레이터</span></strong>: <span class='weak'>일러스트레이터</span>가 일러스트레이터 이름의 부분인 카드를 검색합니다.</li>
+<li><strong>스킬?<span class='weak'>스킬이름</span></strong>: <span class='weak'>스킬이름</span>이 스킬 이름의 부분인 카드를 검색합니다.</li>
+<li><strong>본문?<span class='weak'>본문</span></strong>: <span class='weak'>본문</span>이 카드 설정의 부분인 카드를 검색합니다.</li>
+<li><strong>레어도?<span class='weak'>[연산자]</span><span class='weak'>레어도</span></strong>:
+레어도가 주어진 조건에 맞는 카드를 검색합니다. <span class='weak'>[연산자]</span>는 선택 요소입니다.<br>
+<span class='weak'>[연산자]</span>: &lt;, =, &gt;, &lt;=, &gt;= 중 하나. 생략 시 =을 사용함<br>
+<span class='weak'>레어도</span>: SUPER RARE+, SR+, 슈레플과 같은 레어도 명칭. + 대신 P 사용 가능</li>
+</ul>
+</body>
+</html>
