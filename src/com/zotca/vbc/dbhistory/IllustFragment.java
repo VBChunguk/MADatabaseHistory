@@ -19,6 +19,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,7 +99,10 @@ public class IllustFragment extends Fragment {
 			else
 			{
 				BitmapLoader.loadBitmap(this.getResources(), file.getAbsolutePath(), view);
-				if (checkNetworkState(true))
+				boolean onlyWifi = PreferenceManager
+						.getDefaultSharedPreferences(this.getActivity())
+						.getBoolean("pref_onlywifi", false);
+				if (checkNetworkState(!onlyWifi))
 				{
 					new HttpDownloader(view, cache).execute(urlName);
 				}
