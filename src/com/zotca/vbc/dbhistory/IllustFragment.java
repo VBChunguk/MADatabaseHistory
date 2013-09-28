@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Locale;
+import java.util.concurrent.Executor;
 
 import com.zotca.vbc.dbhistory.bitmap.BitmapLoader;
 import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
@@ -104,7 +105,14 @@ public class IllustFragment extends Fragment {
 						.getBoolean("pref_onlywifi", false);
 				if (checkNetworkState(onlyWifi))
 				{
-					new HttpDownloader(view, cache).execute(urlName);
+					new HttpDownloader(view, cache)
+							.executeOnExecutor(new Executor() {
+								
+								@Override
+								public void execute(Runnable command) {
+									new Thread(command).start();
+								}
+							}, urlName);
 				}
 			}
 		}
