@@ -145,7 +145,7 @@ public class CardSearchResultActivity extends ActionBarActivity {
 					final Set<Integer> cards = delta.getCardIdSet();
 					for (int id : cards)
 					{
-						if (queryResult.contains(id)) continue;
+						if (resultIds.contains(id)) continue;
 						
 						final Card card = delta.getCard(id);
 						if (matchesAdvancedQuery(card, query))
