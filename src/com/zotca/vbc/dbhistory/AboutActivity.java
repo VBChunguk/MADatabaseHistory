@@ -45,12 +45,5 @@ public class AboutActivity extends ActionBarActivity {
 				new Intent(Intent.ACTION_VIEW)
 				.setData(Uri.parse("http://twitter.com/VBHimesama")));
 	}
-
-	public void viewBugReport(View v)
-	{
-		this.startActivity(
-				new Intent(Intent.ACTION_VIEW)
-				.setData(Uri.parse("https://github.com/VBChunguk/MADatabaseHistory/issues/")));
-	}
 	
 }

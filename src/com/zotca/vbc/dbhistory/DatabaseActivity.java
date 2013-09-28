@@ -56,8 +56,8 @@ public class DatabaseActivity extends ActionBarActivity {
 		int id = item.getItemId();
 		switch (id)
 		{
-		case R.id.about:
-			this.startActivity(new Intent(this, AboutActivity.class));
+		case R.id.settings:
+			this.startActivity(new Intent(this, SettingsActivity.class));
 			break;
 		default:
 			return false;

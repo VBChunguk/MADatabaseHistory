@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="title_activity_settings">설정</string>
+
+    <string name="pref_header_general">일반</string>
+    <string name="pref_title_onlywifi">항상 Wi-Fi 사용하기</string>
+    <string name="pref_description_onlywifi">Wi-Fi에 연결되어 있지 않을 땐 일러스트 다운로드 안 함</string>
+    <string name="pref_description_about">버전 %s</string>
+    <string name="pref_title_report">버그 보고하기</string>
+
+</resources>
