@@ -93,9 +93,7 @@ public class DatabaseDelta implements Serializable {
 	
 	private void writeObject(ObjectOutputStream out) throws IOException {
 		out.writeInt(CURRENT_VERSION);
-		System.out.println(CURRENT_VERSION + " => out.writeInt(CURRENT_VERSION);");
 		out.writeObject(mCreatedAt);
-		System.out.println("out.writeObject(mCreatedAt);");
 		int len = mDeltas.size();
 		out.writeInt(len);
 		for (Entry<Integer, DeltaType> item : mDeltas.entrySet())

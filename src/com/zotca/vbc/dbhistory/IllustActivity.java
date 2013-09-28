@@ -26,7 +26,6 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -103,13 +102,11 @@ public class IllustActivity extends ActionBarActivity {
 					
 					@Override
 					public boolean onDown(MotionEvent e) {
-						Log.d("", "onDown");
 						return true;
 					}
 					
 					@Override
 					public boolean onSingleTapUp(MotionEvent e) {
-						Log.d("", "onSigleTapUp");
 						getSupportActionBar().show();
 						setControlsVisible(controlsView, true);
 						delayedHide(AUTO_HIDE_DELAY_MILLIS);

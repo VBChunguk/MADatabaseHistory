@@ -8,16 +8,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.Locale;
-import java.util.concurrent.Executor;
 
 import com.zotca.vbc.dbhistory.bitmap.BitmapLoader;
 import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
 import com.zotca.vbc.dbhistory.net.HttpDownloader;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -66,6 +68,7 @@ public class IllustFragment extends Fragment {
 	public static final String ARG_HORO = "is_horo";
 	public static final String ARG_ID = "id";
 	
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -105,14 +108,15 @@ public class IllustFragment extends Fragment {
 						.getBoolean("pref_onlywifi", false);
 				if (checkNetworkState(onlyWifi))
 				{
-					new HttpDownloader(view, cache)
-							.executeOnExecutor(new Executor() {
-								
-								@Override
-								public void execute(Runnable command) {
-									new Thread(command).start();
-								}
-							}, urlName);
+					final HttpDownloader downloader = new HttpDownloader(view, cache);
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+					{
+						downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlName);
+					}
+					else
+					{
+						downloader.execute(urlName);
+					}
 				}
 			}
 		}
