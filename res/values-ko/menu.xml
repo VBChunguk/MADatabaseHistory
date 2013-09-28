@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     
-    <string name="help_search">Searching help</string>
+    <string name="help_search">검색 도움말</string>
     
 </resources>

@@ -5,6 +5,7 @@ import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -58,6 +59,12 @@ public class DatabaseActivity extends ActionBarActivity {
 		{
 		case R.id.settings:
 			this.startActivity(new Intent(this, SettingsActivity.class));
+			break;
+		case R.id.search_help:
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(
+					Uri.parse("http://vbchunguk.github.io/MADatabaseHistory/help/search.html"));
+			this.startActivity(intent);
 			break;
 		default:
 			return false;
