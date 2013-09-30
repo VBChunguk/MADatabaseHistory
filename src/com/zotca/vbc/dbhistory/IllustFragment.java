@@ -11,7 +11,7 @@ import java.util.Locale;
 
 import com.zotca.vbc.dbhistory.bitmap.BitmapLoader;
 import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
-import com.zotca.vbc.dbhistory.net.HttpDownloader;
+import com.zotca.vbc.dbhistory.net.HttpBitmapDownloader;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -108,7 +108,7 @@ public class IllustFragment extends Fragment {
 						.getBoolean("pref_onlywifi", false);
 				if (checkNetworkState(onlyWifi))
 				{
-					final HttpDownloader downloader = new HttpDownloader(view, cache);
+					final HttpBitmapDownloader downloader = new HttpBitmapDownloader(view, cache);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 					{
 						downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlName);

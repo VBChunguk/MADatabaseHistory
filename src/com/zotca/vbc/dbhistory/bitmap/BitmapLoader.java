@@ -29,7 +29,7 @@ public class BitmapLoader extends AsyncTask<String, Void, Bitmap> {
 	protected Bitmap doInBackground(String... params) {
 		mPath = params[0];
 		try {
-			return BitmapFactory.decodeStream(new ArthurDecodeStream(new FileInputStream(mPath)));
+			return BitmapFactory.decodeStream(new ArthurDecodeStream(new FileInputStream(mPath), ArthurDecodeStream.KEY_IMAGE));
 		} catch (Exception e) {
 			return null;
 		}

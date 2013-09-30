@@ -9,21 +9,20 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-public class ArthurDecodeStream extends InputStream {
+public class ArthurEncodeStream extends InputStream {
 
 	public static final String KEY_IMAGE = "A1dPUcrvur2CRQyl";
 	public static final String KEY_TEXT = "rBwj1MIAivVN011i";
 	private final InputStream mSource;
 	
-	public ArthurDecodeStream(InputStream stream, String key)
-			throws NoSuchAlgorithmException, IOException
-	{
+	public ArthurEncodeStream(InputStream stream, String key)
+			throws NoSuchAlgorithmException, IOException {
 		final SecretKeySpec mKey;
 		final Cipher mCipherAlgo;
 		mKey = new SecretKeySpec(key.getBytes(), "AES");
 		try {
 			mCipherAlgo = Cipher.getInstance("AES/ECB/PKCS5Padding");
-			mCipherAlgo.init(2, mKey);
+			mCipherAlgo.init(Cipher.ENCRYPT_MODE, mKey);
 		} catch (Exception e) {
 			throw new NoSuchAlgorithmException(e);
 		}
@@ -43,7 +42,7 @@ public class ArthurDecodeStream extends InputStream {
 			throw new IOException();
 		}
 	}
-	
+
 	@Override
 	public void close() throws IOException {
 		mSource.close();
