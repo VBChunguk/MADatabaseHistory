@@ -108,7 +108,7 @@ public class IllustFragment extends Fragment {
 						.getBoolean("pref_onlywifi", false);
 				if (checkNetworkState(onlyWifi))
 				{
-					final HttpBitmapDownloader downloader = new HttpBitmapDownloader(view, cache);
+					final HttpBitmapDownloader downloader = new HttpBitmapDownloader(this.getActivity(), view, cache);
 					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 					{
 						downloader.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, urlName);

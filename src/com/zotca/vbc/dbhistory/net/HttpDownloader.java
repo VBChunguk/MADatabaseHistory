@@ -1,27 +1,19 @@
 package com.zotca.vbc.dbhistory.net;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 import java.nio.ByteBuffer;
-import java.security.NoSuchAlgorithmException;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import android.util.Log;
-
-import com.zotca.vbc.crypt.ArthurDecodeStream;
-import com.zotca.vbc.crypt.ArthurEncodeStream;
-import com.zotca.vbc.crypt.Base64;
 
 public class HttpDownloader extends Thread {
-
-	private static final String DEBUG_TAG = "HttpDownloader";
 	
 	public static class DownloadRequest implements Runnable {
+		
+		private static final String ARG_CRYPTED = "crypted";
+		private static final String ARG_IMAGE = "image";
 		
 		public static interface OnDownloadCompleted {
 			public void onDownloadSucceeded(byte[] data);
@@ -31,7 +23,9 @@ public class HttpDownloader extends Thread {
 		
 		private String url;
 		private boolean isPost;
+		private HttpClientHelper helper;
 		private Map<String, String> args;
+		private Map<String, Object> internalArgs;
 		private DownloadRequest next;
 		private OnDownloadCompleted handler;
 		private byte[] result;
@@ -41,11 +35,13 @@ public class HttpDownloader extends Thread {
 			this.url = url;
 			this.isPost = isPost;
 			this.args = null;
+			this.internalArgs = new HashMap<String, Object>();
 		}
 		public DownloadRequest(String url, boolean isPost, Map<String, String> args) {
 			this.url = url;
 			this.isPost = isPost;
 			this.args = args;
+			this.internalArgs = new HashMap<String, Object>();
 		}
 		
 		public DownloadRequest setNext(DownloadRequest next) {
@@ -63,13 +59,35 @@ public class HttpDownloader extends Thread {
 			return this;
 		}
 		
+		public DownloadRequest setClientHelper(HttpClientHelper helper) {
+			this.helper = helper;
+			return this;
+		}
+		
+		public DownloadRequest setInternalArgument(String name, Object value) {
+			this.internalArgs.put(name, value);
+			return this;
+		}
+		
+		private boolean isCrypted() {
+			Boolean ret = (Boolean) internalArgs.get(ARG_CRYPTED);
+			if (ret == null) return isPost;
+			return ret.booleanValue();
+		}
+		private boolean isImage() {
+			Boolean ret = (Boolean) internalArgs.get(ARG_IMAGE);
+			if (ret == null) return !isPost;
+			return ret.booleanValue();
+		}
+		
 		@Override
 		public void run() {
 			try {
-				URL url = new URL(this.url);
+				URI uri = URI.create(url);
 				InputStream resStream;
-				if (!isPost) resStream = downloadGet(url);
-				else resStream = downloadPost(url, args);
+				if (!isPost) resStream = helper.downloadGet(uri, isCrypted(), isImage());
+				else resStream = helper.downloadPost(uri, args, isImage());
+				if (resStream == null) throw new IOException();
 				
 				byte[] buffer = new byte[1024];
 				ByteBuffer ret = ByteBuffer.allocate(1024);
@@ -89,9 +107,11 @@ public class HttpDownloader extends Thread {
 				if (handler != null) handler.onDownloadSucceeded(result);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
+				next = null;
 				if (handler != null) handler.onDownloadFailed(e);
 			} catch (IOException e) {
 				e.printStackTrace();
+				next = null;
 				if (handler != null) handler.onDownloadFailed(e);
 			} finally {
 				if (handler != null) handler.onDownloadCompleted();
@@ -131,89 +151,5 @@ public class HttpDownloader extends Thread {
 	public void quit() {
 		stopSignal = true;
 		if (sleeping) this.interrupt();
-	}
-	
-	public static InputStream downloadGet(URL url) throws IOException
-	{
-		InputStream in = null;
-		Log.d(DEBUG_TAG, "GET Download from " + url.toString());
-		try {
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout(10000);
-			conn.setConnectTimeout(15000);
-			conn.setRequestMethod("GET");
-			conn.setDoInput(true);
-			conn.connect();
-			
-			int response = conn.getResponseCode();
-			if (response != HttpURLConnection.HTTP_OK)
-			{
-				Log.w(DEBUG_TAG,
-						"GET Failed: " + response + " " + conn.getResponseMessage());
-			}
-			in = conn.getInputStream();
-			return new ArthurDecodeStream(in, ArthurDecodeStream.KEY_IMAGE);
-		} catch (IOException e) {
-			return null;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		} finally {
-			if (in != null)
-				in.close();
-		}
-	}
-	
-	public static InputStream downloadPost(URL url, Map<String, String> args) throws IOException
-	{
-		InputStream in = null;
-		Log.d(DEBUG_TAG, "POST Download from " + url.toString());
-		url = new URL(url.toString() + "?cyt=1");
-		try {
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			conn.setReadTimeout(10000);
-			conn.setConnectTimeout(15000);
-			conn.setRequestMethod("POST");
-			conn.setDoInput(true);
-			conn.setDoOutput(true);
-			StringBuilder argsString = new StringBuilder();
-			if (args != null)
-			{
-				boolean first = true;
-				for (Entry<String, String> item : args.entrySet())
-				{
-					String key = item.getKey();
-					String value = item.getValue();
-					byte[] valueBytes = value.getBytes();
-					String codedValue = Base64.encodeFromStream(
-							new ArthurEncodeStream(
-									new ByteArrayInputStream(valueBytes),
-									ArthurEncodeStream.KEY_TEXT));
-					Log.d(DEBUG_TAG, key + "=" + value + " ==> " + codedValue);
-					if (!first) argsString.append('&');
-					argsString.append(key).append('=').append(codedValue);
-					first = false;
-				}
-			}
-			byte[] argsBytes = argsString.toString().getBytes();
-			conn.getOutputStream().write(argsBytes);
-			
-			int response = conn.getResponseCode();
-			if (response != HttpURLConnection.HTTP_OK)
-			{
-				Log.w(DEBUG_TAG,
-						"POST Failed: " + response + " " + conn.getResponseMessage());
-			}
-			in = conn.getInputStream();
-			return new ArthurDecodeStream(in, ArthurDecodeStream.KEY_TEXT);
-		} catch (IOException e) {
-			return null;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		} finally {
-			if (in != null)
-				in.close();
-		}
 	}
 }

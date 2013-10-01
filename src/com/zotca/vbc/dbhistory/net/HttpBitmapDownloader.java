@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
 
 import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -18,19 +19,21 @@ public class HttpBitmapDownloader extends AsyncTask<String, Void, InputStream> {
 	private final WeakReference<ImageView> mWeakRef;
 	private String mUrl;
 	private final MemoryBitmapCache mCustomCache;
+	private final HttpClientHelper mHelper;
 	
-	public HttpBitmapDownloader(ImageView imageView, MemoryBitmapCache customCache)
+	public HttpBitmapDownloader(Context ctx, ImageView imageView, MemoryBitmapCache customCache)
 	{
 		mWeakRef = new WeakReference<ImageView>(imageView);
 		if (customCache == null) mCustomCache = MemoryBitmapCache.getCache();
 		else mCustomCache = customCache;
+		mHelper = new HttpClientHelper(ctx);
 	}
 	
 	@Override
 	protected InputStream doInBackground(String... args) {
 		mUrl = args[0];
 		try {
-			return HttpDownloader.downloadGet(new URL(mUrl));
+			return mHelper.downloadGet(URI.create(mUrl), false, true);
 		} catch (MalformedURLException e) {
 		} catch (IOException e) {
 		}
