@@ -3,7 +3,6 @@ package com.zotca.vbc.dbhistory.net;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +20,7 @@ public class HttpDownloader extends Thread {
 			public void onDownloadCompleted();
 		}
 		
-		private String url;
+		private String endpoint;
 		private boolean isPost;
 		private HttpClientHelper helper;
 		private Map<String, String> args;
@@ -31,14 +30,14 @@ public class HttpDownloader extends Thread {
 		private byte[] result;
 		private int sleepLen;
 		
-		public DownloadRequest(String url, boolean isPost) {
-			this.url = url;
+		public DownloadRequest(String endpoint, boolean isPost) {
+			this.endpoint = endpoint;
 			this.isPost = isPost;
 			this.args = null;
 			this.internalArgs = new HashMap<String, Object>();
 		}
-		public DownloadRequest(String url, boolean isPost, Map<String, String> args) {
-			this.url = url;
+		public DownloadRequest(String endpoint, boolean isPost, Map<String, String> args) {
+			this.endpoint = endpoint;
 			this.isPost = isPost;
 			this.args = args;
 			this.internalArgs = new HashMap<String, Object>();
@@ -83,10 +82,9 @@ public class HttpDownloader extends Thread {
 		@Override
 		public void run() {
 			try {
-				URI uri = URI.create(url);
 				InputStream resStream;
-				if (!isPost) resStream = helper.downloadGet(uri, isCrypted(), isImage());
-				else resStream = helper.downloadPost(uri, args, isImage());
+				if (!isPost) resStream = helper.downloadGet(endpoint, isCrypted(), isImage());
+				else resStream = helper.downloadPost(endpoint, args, isImage());
 				if (resStream == null) throw new IOException();
 				
 				byte[] buffer = new byte[1024];

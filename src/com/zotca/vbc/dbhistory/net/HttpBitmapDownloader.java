@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
-import java.net.URI;
 
 import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
 
@@ -33,7 +32,7 @@ public class HttpBitmapDownloader extends AsyncTask<String, Void, InputStream> {
 	protected InputStream doInBackground(String... args) {
 		mUrl = args[0];
 		try {
-			return mHelper.downloadGet(URI.create(mUrl), false, true);
+			return mHelper.downloadGet(mUrl, false, true);
 		} catch (MalformedURLException e) {
 		} catch (IOException e) {
 		}

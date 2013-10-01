@@ -38,7 +38,7 @@ import android.util.Log;
 public class HttpClientHelper {
 
 	private static final String DEBUG_TAG = "HttpClientHelper";
-	private static final String TARGET_SERVER = "http://ma.actoz.com:10001/";
+	private static final String TARGET_SERVER = "http://ma.actoz.com:10001";
 	private static final int APP_VERSION = 103;
 	
 	private static final String AUTH_USERNAME = "iW7B5MWJ";
@@ -120,14 +120,19 @@ public class HttpClientHelper {
 				new UsernamePasswordCredentials(AUTH_USERNAME, AUTH_PASSWORD));
 	}
 	
-	public InputStream downloadGet(URI uri, boolean isCrypted, boolean isImage)
+	public InputStream downloadGet(String endpoint, boolean isCrypted, boolean isImage)
 			throws IOException {
 		if (!checkNetworkState(!isImage)) return null;
 		
+		URI uri;
+		if (isCrypted) endpoint += "?cyt=1";
+		if (endpoint.startsWith("/"))
+			uri = URI.create(TARGET_SERVER + endpoint);
+		else
+			uri = URI.create(endpoint);
 		InputStream in = null;
 		Log.d(DEBUG_TAG,
 				"GET Download from " + uri.toString() + (isCrypted?" - crypted connection":""));
-		if (isCrypted) uri = URI.create(uri.toString() + "?cyt=1");
 		try {
 			HttpGet request = new HttpGet(uri);
 			request.setHeader("User-Agent", USER_AGENT);
@@ -163,13 +168,18 @@ public class HttpClientHelper {
 		}
 	}
 	
-	public InputStream downloadPost(URI uri, Map<String, String> args, boolean isImage)
+	public InputStream downloadPost(String endpoint, Map<String, String> args, boolean isImage)
 			throws IOException {
 		if (!checkNetworkState(!isImage)) return null;
 		
+		URI uri;
+		endpoint += "?cyt=1";
+		if (endpoint.startsWith("/"))
+			uri = URI.create(TARGET_SERVER + endpoint);
+		else
+			uri = URI.create(endpoint);
 		InputStream in = null;
 		Log.d(DEBUG_TAG, "POST Download from " + uri.toString() + " - crypted connection");
-		uri = URI.create(uri.toString() + "?cyt=1");
 		try {
 			HttpPost request = new HttpPost(uri);
 			request.setEntity(new UrlEncodedFormEntity(encodeArgs(args)));
