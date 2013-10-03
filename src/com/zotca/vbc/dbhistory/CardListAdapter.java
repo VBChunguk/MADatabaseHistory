@@ -6,6 +6,9 @@ import java.util.Locale;
 import com.zotca.vbc.dbhistory.bitmap.BitmapLoader;
 import com.zotca.vbc.dbhistory.core.CardDatabase;
 import com.zotca.vbc.dbhistory.core.DatabaseDelta;
+import com.zotca.vbc.dbhistory.core.MyCardManager;
+import com.zotca.vbc.dbhistory.core.MyCardManager.ServerCard;
+import com.zotca.vbc.dbhistory.core.MyCardManager.ServerCard.Attributes;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -64,6 +67,24 @@ public class CardListAdapter extends ArrayAdapter<CardDatabase.Card> {
 		case INIT:
 			deltaInfo.setText(R.string.delta_init);
 			break;
+		}
+		
+		MyCardManager cards = MyCardManager.getInstance();
+		if (cards != null)
+		{
+			final TextView statView = (TextView) v.findViewById(R.id.stat);
+			final ServerCard serverCardData = cards.getBestCard(id);
+			if (serverCardData != null)
+			{
+				final int level = serverCardData.getIntAttribute(Attributes.LEVEL);
+				final int hp = serverCardData.getIntAttribute(Attributes.HP);
+				final int atk = serverCardData.getIntAttribute(Attributes.ATK);
+				final boolean holo = serverCardData.getBooleanAttribute(Attributes.HOLOGRAPHY);
+				
+				final String statString = String.format(Locale.getDefault(),
+						"%sLv. %d HP %d ATK %d", holo?"☆ ":"", level, hp, atk);
+				statView.setText(statString);
+			}
 		}
 		
 		v.setTag(id);
