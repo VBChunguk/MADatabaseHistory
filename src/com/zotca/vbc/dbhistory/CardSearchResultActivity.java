@@ -8,6 +8,7 @@ import java.util.Set;
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 import com.zotca.vbc.dbhistory.core.DatabaseDelta;
 import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
+import com.zotca.vbc.dbhistory.core.RuntimeTestUtility;
 
 import android.os.Bundle;
 import android.app.SearchManager;
@@ -64,6 +65,13 @@ public class CardSearchResultActivity extends ActionBarActivity {
 		});
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		int ret = RuntimeTestUtility.test(getApplicationContext(), false);
+		if (ret != 0) finish();
+	}
+	
 	private void setupActionBar() {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	}

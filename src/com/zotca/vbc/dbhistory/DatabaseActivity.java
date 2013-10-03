@@ -1,6 +1,7 @@
 package com.zotca.vbc.dbhistory;
 
 import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
+import com.zotca.vbc.dbhistory.core.RuntimeTestUtility;
 
 import android.app.SearchManager;
 import android.content.Context;
@@ -40,6 +41,13 @@ public class DatabaseActivity extends ActionBarActivity {
 		});
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		int ret = RuntimeTestUtility.test(getApplicationContext(), false);
+		if (ret != 0) finish();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.database, menu);

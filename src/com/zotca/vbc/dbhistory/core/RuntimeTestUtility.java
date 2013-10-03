@@ -19,7 +19,7 @@ public final class RuntimeTestUtility {
 	private static final String ARTHUR_PACKAGE = "com.square_enix.million_kr";
 	private static final String DEBUG_TAG = "RuntimeTestUtility";
 	
-	public static int test(Context ctx) {
+	public static int test(Context ctx, boolean useGCM) {
 		// External storage test
 		final String extState = Environment.getExternalStorageState();
 		if (!extState.equals(Environment.MEDIA_MOUNTED))
@@ -38,15 +38,18 @@ public final class RuntimeTestUtility {
 			return ARTHUR_NOT_INSTALLED;
 		}
 		
-		// Google Play service test
-		int playServiceRet = testPlayService(ctx);
-		if (playServiceRet != 0)
+		if (useGCM)
 		{
-			Log.e(DEBUG_TAG, "Google Play service error occured: " + playServiceRet);
-			if (playServiceRet > 0)
-				return playServiceRet;
-			else
-				return GOOGLE_PLAY_ERROR;
+			// Google Play service test
+			int playServiceRet = testPlayService(ctx);
+			if (playServiceRet != 0)
+			{
+				Log.e(DEBUG_TAG, "Google Play service error occured: " + playServiceRet);
+				if (playServiceRet > 0)
+					return playServiceRet;
+				else
+					return GOOGLE_PLAY_ERROR;
+			}
 		}
 		
 		return SUCCESS;

@@ -2,6 +2,7 @@ package com.zotca.vbc.dbhistory;
 
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 import com.zotca.vbc.dbhistory.core.DatabaseFileManager;
+import com.zotca.vbc.dbhistory.core.RuntimeTestUtility;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -82,6 +83,13 @@ public class CardViewActivity extends ActionBarActivity {
 				});
 			}
 		});
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		int ret = RuntimeTestUtility.test(getApplicationContext(), false);
+		if (ret != 0) finish();
 	}
 	
 	@Override

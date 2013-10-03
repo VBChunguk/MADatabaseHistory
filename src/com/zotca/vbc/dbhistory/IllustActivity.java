@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import com.zotca.vbc.dbhistory.bitmap.MemoryBitmapCache;
 import com.zotca.vbc.dbhistory.bitmap.ShareIllustProcessor;
+import com.zotca.vbc.dbhistory.core.RuntimeTestUtility;
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
 import android.annotation.TargetApi;
@@ -64,6 +65,13 @@ public class IllustActivity extends ActionBarActivity {
 			// controls.
 			controlsView.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
 		}
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		int ret = RuntimeTestUtility.test(getApplicationContext(), false);
+		if (ret != 0) finish();
 	}
 	
 	private MemoryBitmapCache customCache;

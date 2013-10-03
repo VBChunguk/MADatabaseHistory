@@ -31,35 +31,47 @@ public final class ArthurLoginHelper {
 	private static final String DEBUG_TAG = "ArthurLoginHelper";
 	
 	public synchronized static HttpClientHelper initializeClient(
-			final Context ctx, final DownloadRequest.OnDownloadCompleted completeHandler) {
+			final Context ctx, final DownloadRequest.OnDownloadCompleted completeHandler,
+			final boolean useGCM) {
 		HttpClientHelper helper = new HttpClientHelper(ctx);
 		DownloadRequest startReq = new DownloadRequest(CHECK_INSPECTION, true)
 				.setClientHelper(helper)
 				.setOnDownloadCompletedListener(new SimpleOnDownloadCompletedHandler() {
 					@Override
 					public DownloadRequest onDownloadSucceeded(byte[] data) throws Exception {
-						String regId = getRegistrationId(ctx);
-						if (regId == null) throw new Exception();
-						regId = Base64.encodeToString(regId.getBytes(), Base64.DEFAULT);
+						DownloadRequest nextReq;
+						
 						String id = getId();
 						String pw = getPassword();
 						Log.d(DEBUG_TAG, id + "," + pw);
-						Log.d(DEBUG_TAG, regId);
-						
-						Map<String, String> args = new HashMap<String, String>();
-						args.put("S", "nosession");
-						args.put("login_id", id);
-						args.put("password", pw);
-						args.put("app", "and");
-						args.put("token", regId);
-						
 						Map<String, String> loginArgs = new HashMap<String, String>();
 						loginArgs.put("login_id", id);
 						loginArgs.put("password", pw);
-						DownloadRequest nextReq =
-								new DownloadRequest(POST_DEVICETOKEN, true, args)
-								.setNext(new DownloadRequest(LOGIN, true, loginArgs)
-								.setOnDownloadCompletedListener(completeHandler) );
+						
+						if (useGCM)
+						{
+							String regId = getRegistrationId(ctx);
+							if (regId == null) throw new Exception();
+							regId = Base64.encodeToString(regId.getBytes(), Base64.DEFAULT);
+							Log.d(DEBUG_TAG, regId);
+							Map<String, String> args = new HashMap<String, String>();
+							args.put("S", "nosession");
+							args.put("login_id", id);
+							args.put("password", pw);
+							args.put("app", "and");
+							args.put("token", regId);
+							
+							nextReq =
+									new DownloadRequest(POST_DEVICETOKEN, true, args)
+									.setNext(new DownloadRequest(LOGIN, true, loginArgs)
+									.setOnDownloadCompletedListener(completeHandler) );
+						}
+						else
+						{
+							nextReq =
+									new DownloadRequest(LOGIN, true, loginArgs)
+									.setOnDownloadCompletedListener(completeHandler);
+						}
 						return nextReq;
 					}
 				});
