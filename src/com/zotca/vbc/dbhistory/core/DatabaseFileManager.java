@@ -13,12 +13,14 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.Locale;
 
+import com.zotca.vbc.dbhistory.AlertDialogFragment;
 import com.zotca.vbc.dbhistory.ProgressDialogFragment;
 import com.zotca.vbc.dbhistory.R;
 import com.zotca.vbc.dbhistory.core.CardDatabase.Card;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Pair;
 
@@ -101,12 +103,28 @@ public class DatabaseFileManager {
 				@Override
 				public void run() {
 					mObject = new DatabaseFileManager(activity.getFilesDir(), modifier);
+					final DialogFragment confirm;
+					if (MyCardManager.getInstance() == null)
+					{
+						confirm = new AlertDialogFragment();
+						Bundle confirmArgs = new Bundle();
+						confirmArgs.putString(
+								AlertDialogFragment.ARG_TITLE,
+								activity.getString(R.string.dialog_title_mycard));
+						confirmArgs.putString(
+								AlertDialogFragment.ARG_MESSAGE,
+								activity.getString(R.string.dialog_message_mycard));
+						confirm.setArguments(confirmArgs);
+					}
+					else confirm = null;
 					activity.runOnUiThread(new Runnable() {
 
 						@Override
 						public void run() {
 							runAfter.onPostProcess(mObject);
 							df.dismissAllowingStateLoss();
+							if (confirm != null)
+								confirm.show(activity.getSupportFragmentManager(), "askdialog");
 						}
 						
 					});

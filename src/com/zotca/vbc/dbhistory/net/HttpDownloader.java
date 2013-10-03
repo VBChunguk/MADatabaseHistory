@@ -1,8 +1,8 @@
 package com.zotca.vbc.dbhistory.net;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,19 +103,15 @@ public class HttpDownloader extends Thread {
 				if (resStream == null) throw new IOException();
 				
 				byte[] buffer = new byte[1024];
-				ByteBuffer ret = ByteBuffer.allocate(1024);
-				ret.mark();
+				ByteArrayOutputStream os = new ByteArrayOutputStream();
 				while (true)
 				{
 					int read = resStream.read(buffer);
 					if (read < 0) break;
-					ret.put(buffer, 0, read);
+					os.write(buffer, 0, read);
 				}
-				
-				ret.limit(ret.position()).reset();
-				int len = ret.remaining();
-				result = new byte[len];
-				ret.get(result);
+				result = os.toByteArray();
+				os.close();
 				
 				if (handler != null)
 				{
@@ -157,7 +153,7 @@ public class HttpDownloader extends Thread {
 					sleeping = false;
 				}
 			}
-			if (current.next.helper == null)
+			if (current.next != null && current.next.helper == null)
 				current.next.helper = current.helper;
 			current = current.next; // chain
 		}
