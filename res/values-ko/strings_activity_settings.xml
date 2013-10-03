@@ -3,6 +3,7 @@
     <string name="title_activity_settings">설정</string>
 
     <string name="pref_header_general">일반</string>
+    <string name="pref_category_illust">일러스트</string>
     <string name="pref_title_onlywifi">데이터 네트워크 사용 허용</string>
     <string name="pref_description_onlywifi">데이터 네트워크를 사용해 일러스트를 다운로드할 수 있게 합니다</string>
     <string name="pref_description_about">버전 %s</string>

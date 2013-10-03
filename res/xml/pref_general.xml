@@ -1,13 +1,19 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory
-        android:title="@string/pref_header_general"
-        android:key="pref_key_general" >
+        android:title="@string/pref_category_illust"
+        android:key="pref_key_cat_illust" >
+        
         <CheckBoxPreference
 	        android:defaultValue="false"
 	        android:key="pref_onlywifi"
 	        android:summary="@string/pref_description_onlywifi"
 	        android:title="@string/pref_title_onlywifi" />
+    </PreferenceCategory>
+    
+    <PreferenceCategory
+        android:title="@string/pref_header_general"
+        android:key="pref_key_general" >
 
 	    <Preference
 	        android:title="@string/title_activity_about"

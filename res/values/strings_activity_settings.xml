@@ -3,6 +3,7 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_header_general">General</string>
+    <string name="pref_category_illust">Illust</string>
     <string name="pref_title_onlywifi">Allow using data network</string>
     <string name="pref_description_onlywifi">Illust Viewer can download illust via data network</string>
     <string name="pref_description_about">Version %s</string>
