@@ -22,4 +22,8 @@
     <string name="dialog_title_mycard">내 카드 목록을 불러오시겠습니까?</string>
     <string name="dialog_message_mycard">서버에 로그인해 카드 목록을 가져옵니다.</string>
     <string name="dialog_inprogress_mycard">서버와 통신 중입니다…</string>
+    
+    <string name="dialog_title_commerror">통신 에러가 발생했습니다</string>
+    <string name="dialog_message_commerror">재접속을 시도할 수 있습니다.</string>
+    <string name="dialog_positive_commerror">다시 시도</string>
 </resources>

@@ -21,11 +21,10 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
-import android.support.v7.app.ActionBarActivity;
 import android.content.Context;
 import android.content.Intent;
 
-public class CardSearchResultActivity extends ActionBarActivity {
+public class CardSearchResultActivity extends LoadCardActivityBase {
 
 	private DatabaseFileManager mFileManager;
 	
@@ -70,6 +69,12 @@ public class CardSearchResultActivity extends ActionBarActivity {
 		super.onResume();
 		int ret = RuntimeTestUtility.test(getApplicationContext(), false);
 		if (ret != 0) finish();
+	}
+	
+	@Override
+	protected void reloadAfterLoad() {
+		super.reloadAfterLoad();
+		search();
 	}
 	
 	private void setupActionBar() {

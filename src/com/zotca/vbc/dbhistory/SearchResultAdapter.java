@@ -61,6 +61,8 @@ public class SearchResultAdapter extends ArrayAdapter<Card> {
 						"%sLv. %d HP %d ATK %d", holo?"☆ ":"", level, hp, atk);
 				statView.setText(statString);
 			}
+			else
+				statView.setText("");
 		}
 		
 		v.setTag(id);

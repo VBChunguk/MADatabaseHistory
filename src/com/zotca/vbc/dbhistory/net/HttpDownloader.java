@@ -15,7 +15,7 @@ public class HttpDownloader extends Thread {
 		
 		public static interface OnDownloadCompleted {
 			public DownloadRequest onDownloadSucceeded(byte[] data) throws Exception;
-			public void onDownloadFailed(Exception e);
+			public boolean onDownloadFailed(Exception e);
 			public void onDownloadCompleted();
 		}
 		
@@ -27,7 +27,8 @@ public class HttpDownloader extends Thread {
 			}
 
 			@Override
-			public void onDownloadFailed(Exception e) {
+			public boolean onDownloadFailed(Exception e) {
+				return false;
 			}
 
 			@Override
@@ -94,6 +95,7 @@ public class HttpDownloader extends Thread {
 			return ret.booleanValue();
 		}
 		
+		private boolean retry;
 		@Override
 		public void run() {
 			try {
@@ -120,8 +122,8 @@ public class HttpDownloader extends Thread {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				next = null;
-				if (handler != null) handler.onDownloadFailed(e);
+				if (handler != null) retry = handler.onDownloadFailed(e);
+				if (!retry) next = null;
 			} finally {
 				if (handler != null) handler.onDownloadCompleted();
 			}
@@ -153,9 +155,12 @@ public class HttpDownloader extends Thread {
 					sleeping = false;
 				}
 			}
-			if (current.next != null && current.next.helper == null)
-				current.next.helper = current.helper;
-			current = current.next; // chain
+			if (!current.retry)
+			{
+				if (current.next != null && current.next.helper == null)
+					current.next.helper = current.helper;
+				current = current.next; // chain
+			}
 		}
 	}
 	

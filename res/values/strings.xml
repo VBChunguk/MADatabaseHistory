@@ -23,4 +23,8 @@
     <string name="dialog_title_mycard">Load your cards?</string>
     <string name="dialog_message_mycard">"We'll sign into the server and download the card list."</string>
     <string name="dialog_inprogress_mycard">Communicating with the server…</string>
+    
+    <string name="dialog_title_commerror">Communication error occurred</string>
+    <string name="dialog_message_commerror">You can retry connecting.</string>
+    <string name="dialog_positive_commerror">Retry</string>
 </resources>
