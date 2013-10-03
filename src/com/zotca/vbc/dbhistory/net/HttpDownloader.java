@@ -2,7 +2,6 @@ package com.zotca.vbc.dbhistory.net;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +14,25 @@ public class HttpDownloader extends Thread {
 		private static final String ARG_IMAGE = "image";
 		
 		public static interface OnDownloadCompleted {
-			public void onDownloadSucceeded(byte[] data);
+			public DownloadRequest onDownloadSucceeded(byte[] data) throws Exception;
 			public void onDownloadFailed(Exception e);
 			public void onDownloadCompleted();
+		}
+		
+		public static class SimpleOnDownloadCompletedHandler implements OnDownloadCompleted {
+
+			@Override
+			public DownloadRequest onDownloadSucceeded(byte[] data) throws Exception {
+				return null;
+			}
+
+			@Override
+			public void onDownloadFailed(Exception e) {
+			}
+
+			@Override
+			public void onDownloadCompleted() {
+			}
 		}
 		
 		private String endpoint;
@@ -102,12 +117,12 @@ public class HttpDownloader extends Thread {
 				result = new byte[len];
 				ret.get(result);
 				
-				if (handler != null) handler.onDownloadSucceeded(result);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				next = null;
-				if (handler != null) handler.onDownloadFailed(e);
-			} catch (IOException e) {
+				if (handler != null)
+				{
+					DownloadRequest tempNext = handler.onDownloadSucceeded(result);
+					if (tempNext != null) next = tempNext;
+				}
+			} catch (Exception e) {
 				e.printStackTrace();
 				next = null;
 				if (handler != null) handler.onDownloadFailed(e);
@@ -142,6 +157,8 @@ public class HttpDownloader extends Thread {
 					sleeping = false;
 				}
 			}
+			if (current.next.helper == null)
+				current.next.helper = current.helper;
 			current = current.next; // chain
 		}
 	}
