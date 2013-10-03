@@ -92,7 +92,8 @@ public class DatabaseActivity extends ActionBarActivity implements ConfirmDialog
 		
 		final ProgressDialogFragment df = new ProgressDialogFragment();
 		Bundle args = new Bundle();
-		args.putInt(ProgressDialogFragment.ARG_TITLE_ID, R.string.dialog_inprogress_mycard);
+		args.putString(ProgressDialogFragment.ARG_TITLE, "");
+		args.putInt(ProgressDialogFragment.ARG_MESSAGE_ID, R.string.dialog_inprogress_mycard);
 		df.setArguments(args);
 		df.show(getSupportFragmentManager(), "mycard_prog");
 		ArthurLoginHelper.initializeClient(getApplicationContext(), new OnDownloadCompleted() {

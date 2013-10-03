@@ -47,7 +47,7 @@ public class MyCardManager {
 		}
 		public static Attributes getAttributeByName(String attributeName) {
 			if ("serial_id".equals(attributeName)) return Attributes.SERIAL_ID;
-			if ("master_id".equals(attributeName)) return Attributes.MASTER_ID;
+			if ("master_card_id".equals(attributeName)) return Attributes.MASTER_ID;
 			if ("holography".equals(attributeName)) return Attributes.HOLOGRAPHY;
 			
 			if ("hp".equals(attributeName)) return Attributes.HP;
@@ -187,6 +187,7 @@ public class MyCardManager {
 		instance = null;
 		try {
 			cards = new LongSparseArray<ServerCard>();
+			bestCard = new SparseArray<ServerCard>();
 			XmlPullParser parser = XmlPullParserFactory.newInstance().newPullParser();
 			ByteArrayInputStream dataStream = new ByteArrayInputStream(data);
 			parser.setInput(dataStream, "UTF-8");
@@ -205,16 +206,21 @@ public class MyCardManager {
 						cards.put(serialId, card);
 						
 						ServerCard target = bestCard.get(masterId);
-						int targetLevel = target.getIntAttribute(Attributes.LEVEL);
-						if (targetLevel < level)
-							bestCard.put(masterId, card);
-						else if (targetLevel == level)
+						if (target != null)
 						{
-							boolean holo = card.getBooleanAttribute(Attributes.HOLOGRAPHY);
-							boolean targetHolo = target.getBooleanAttribute(Attributes.HOLOGRAPHY);
-							if (!targetHolo && holo)
+							int targetLevel = target.getIntAttribute(Attributes.LEVEL);
+							if (targetLevel < level)
 								bestCard.put(masterId, card);
+							else if (targetLevel == level)
+							{
+								boolean holo = card.getBooleanAttribute(Attributes.HOLOGRAPHY);
+								boolean targetHolo = target.getBooleanAttribute(Attributes.HOLOGRAPHY);
+								if (!targetHolo && holo)
+									bestCard.put(masterId, card);
+							}
 						}
+						else
+							bestCard.put(masterId, card);
 					}
 				}
 				eventType = parser.next();
@@ -230,5 +236,13 @@ public class MyCardManager {
 			Log.e(DEBUG_TAG, "Wrong response");
 			e.printStackTrace();
 		}
+	}
+	
+	public ServerCard getBestCard(int masterId) {
+		return bestCard.get(masterId);
+	}
+	
+	public ServerCard getCardFromSerial(long serialId) {
+		return cards.get(serialId);
 	}
 }
